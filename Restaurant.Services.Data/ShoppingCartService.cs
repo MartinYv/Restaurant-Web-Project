@@ -55,8 +55,8 @@ namespace Restaurant.Services.Data
             {
                 CartItem newCartItem = new CartItem
                 {
-                   // Cart = cart,
-                   // CartId= cart.CartId,
+                    Cart = cart,
+                    CartId= cart.CartId,
 
                     DishId = dish.Id,
                     Dish = dish,
@@ -65,7 +65,7 @@ namespace Restaurant.Services.Data
                 cart.CartItems.Add(newCartItem);
             }
 
-           // await _context.SaveChangesAsync();
+           await _context.SaveChangesAsync();
             _session.SetObjectAsJson(CartSessionKey, cart);
         }
 

@@ -39,5 +39,20 @@ namespace Restaurant.Web.Controllers
 
             return View(model);
         }
+
+        public async Task<IActionResult> Delete(int id)
+        {
+            try
+            {
+                await menuTypeService.DeleteMenuTypeAsync(id);
+                return RedirectToAction(nameof(All));
+            }
+            catch (Exception)
+            {
+                ModelState.AddModelError("", "Invalid menu type id!");
+                return RedirectToAction(nameof(All));
+            }
+
+        }
     }
 }

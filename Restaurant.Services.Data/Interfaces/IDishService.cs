@@ -12,5 +12,7 @@ namespace Restaurant.Services.Data.Interfaces
         Task AddDishToUserCollectionAsync(int id, Guid userId);
 
         Task<Dish> GetDishById(int id);
+
+        Task DeleteDishByIdAsync(int id);
     }
 }

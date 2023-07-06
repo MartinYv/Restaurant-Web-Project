@@ -11,7 +11,7 @@ namespace Restaurant.Services.Data.Interfaces
     public interface IDishTypeService
     {
         Task AddDishTypeAsync(AddDishTypeViewModel model);
-        Task <IEnumerable<AllDishTypesViewModel>> AllDishTypesAsync(); 
-
+        Task <IEnumerable<AllDishTypesViewModel>> AllDishTypesAsync();
+        Task DeleteDishTypeAsync(int id);
     }
 }

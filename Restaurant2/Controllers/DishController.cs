@@ -36,7 +36,7 @@ namespace Restaurant.Web.Controllers
 
             try
             {
-                await dishService.Add(model);              
+                await dishService.Add(model);
                 return RedirectToAction(nameof(All));
             }
             catch (Exception)
@@ -45,7 +45,7 @@ namespace Restaurant.Web.Controllers
                 ModelState.AddModelError("", "There isnt menu with that type of dish.");
                 return View(nameof(All));// to do 
             }
-           
+
         }
 
         public async Task<IActionResult> All()
@@ -61,6 +61,22 @@ namespace Restaurant.Web.Controllers
 
             await dishService.AddDishToUserCollectionAsync(id, userIdGuid);
             return RedirectToAction(nameof(All));
+        }
+
+        public async Task<IActionResult> Delete(int id)
+        {          
+
+            try
+            {
+                await dishService.DeleteDishByIdAsync(id);
+                return RedirectToAction(nameof(All));
+            }
+            catch (Exception)
+            {
+
+                throw new ArgumentException("Invalid dish Id");
+            }
+            
         }
     }
 }

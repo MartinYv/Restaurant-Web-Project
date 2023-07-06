@@ -35,12 +35,18 @@ namespace Restaurant.Services.Data
 
         public async Task<IEnumerable<AllMenuTypesViewModel>> AllMenuTypesAsync()
         {
-            return await context.MenuTypes
+            return await context.MenuTypes.Where(mt => mt.IsDeleted == false)
                 .Select(dt => new AllMenuTypesViewModel()
                 {
                     Id = dt.Id,
                     Name = dt.Name
                 }).ToListAsync();
+        }
+
+        public async Task DeleteMenuTypeAsync(int id)
+        {
+            var menuType = await context.MenuTypes.Where(mt => mt.Id == id).FirstOrDefaultAsync();
+            menuType.IsDeleted = true;
         }
     }
 }

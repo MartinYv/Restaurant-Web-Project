@@ -12,5 +12,7 @@ namespace Restaurant.Services.Data.Interfaces
     {
         Task AddMenuTypeAsync(AddMenuTypeViewModel model);
         Task<IEnumerable<AllMenuTypesViewModel>> AllMenuTypesAsync();
+
+        Task DeleteMenuTypeAsync(int id);
     }
 }

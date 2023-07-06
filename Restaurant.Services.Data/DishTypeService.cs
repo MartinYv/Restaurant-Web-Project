@@ -36,5 +36,11 @@ namespace Restaurant.Services.Data
                     Name = dt.Name
                 }).ToListAsync();
         }
+
+        public async Task DeleteDishTypeAsync(int id)
+        {
+            var dishType = await context.DishTypes.Where(dt => dt.Id == id).FirstOrDefaultAsync();
+            dishType.IsDeleted = true;
+        }
     }
 }

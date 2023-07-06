@@ -3,6 +3,7 @@ using Restaurant.Data.Models;
 using Restaurant.Services.Data.Interfaces;
 using Restaurant.ViewModels.Models.Dish;
 using Restaurant2.Data;
+using System.Security.Cryptography.X509Certificates;
 
 namespace Restaurant.Services.Data
 {
@@ -54,7 +55,8 @@ namespace Restaurant.Services.Data
 
         public async Task<IEnumerable<AllDishesViewModel>> AllDishesAsync()
         {
-            return await context.Dishes.Select(d => new AllDishesViewModel
+            return await context.Dishes.Where(d=>d.IsDeleted == false)
+                .Select(d => new AllDishesViewModel
             {
                 Id= d.Id,
                 Name = d.Name,
@@ -68,6 +70,13 @@ namespace Restaurant.Services.Data
         public async Task<IEnumerable<DishType>> AllDishTypesAsync()
         {
             return await context.DishTypes.ToListAsync();
+        }
+
+        public async Task DeleteDishByIdAsync(int id)
+        {
+            Dish dish = await context.Dishes.Where(d => d.IsDeleted == false && d.Id == id).FirstOrDefaultAsync();
+
+            dish.IsDeleted = true;
         }
 
         public async Task<Dish> GetDishById(int Id)
