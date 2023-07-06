@@ -1,0 +1,18 @@
+﻿@using Restaurant.ViewModels.Models.Menu;
+
+@model IEnumerable<AllMenuTypesViewModel>
+@{
+	ViewBag.Title = "All Menu Types";
+}
+
+<h2 class="text-center">@ViewBag.Title</h2>
+<hr />
+
+<div class="text-center row">
+	@foreach (var type in Model)
+	{
+
+		<p class="mb-0">Type Id: @type.Id</p>
+		<p class="mb-0">Type Name: @type.Name</p>
+	}
+</div>

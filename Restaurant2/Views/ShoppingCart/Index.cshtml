@@ -1,0 +1,44 @@
+﻿@using Restaurant.Data.Models;
+@model Cart
+
+<h1>Shopping Cart</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Price</th>
+            <th>Quantity</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var cartItem in Model.CartItems)
+        {
+            <tr>
+                <td>@cartItem.Dish.Name</td>
+                <td>@cartItem.Dish.Price</td>
+                <td>@cartItem.Quantity</td>
+                <td>
+                    <form asp-controller="ShoppingCart" asp-action="RemoveFromCart" method="post">
+                        <input type="hidden" name="cartItemId" value="@cartItem.CartItemId" />
+                        <button type="submit">Remove</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<div class="total-sum">
+    Total: @Model.CartItems.Sum(ci => ci.Dish.Price * ci.Quantity)
+</div>
+
+<form asp-controller="Order" asp-action="Add" method="post">
+    @foreach (var cartItem in Model.CartItems)
+    {
+        <input type="hidden" name="cartItems" value="@cartItem.CartItemId" />
+    }
+    <button type="submit">Confirm Order</button>
+</form>
+
