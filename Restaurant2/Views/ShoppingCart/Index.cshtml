@@ -3,42 +3,47 @@
 
 <h1>Shopping Cart</h1>
 
-<table class="table">
-    <thead>
+@if (Model.CartItems.Count == 0)
+{
+    <p>Your cart is empty.</p>
+}
+else
+{
+    <table>
         <tr>
-            <th>Name</th>
-            <th>Price</th>
+            <th>Item</th>
             <th>Quantity</th>
+            <th>Price</th>
+            <th>Total</th>
             <th></th>
         </tr>
-    </thead>
-    <tbody>
-        @foreach (var cartItem in Model.CartItems)
+        @foreach (var item in Model.CartItems)
         {
             <tr>
-                <td>@cartItem.Dish.Name</td>
-                <td>@cartItem.Dish.Price</td>
-                <td>@cartItem.Quantity</td>
                 <td>
-                    <form asp-controller="ShoppingCart" asp-action="RemoveFromCart" method="post">
-                        <input type="hidden" name="cartItemId" value="@cartItem.CartItemId" />
+                    <img src="@item.Dish.ImageUrl" alt="@item.Dish.Name" />
+                    <span>@item.Dish.Name</span>
+                </td>
+                <td>
+                    <form method="post" action="@Url.Action("UpdateQuantity", "ShoppingCart")">
+                        <input type="hidden" name="cartItemId" value="@item.CartItemId" />
+                        <input type="number" name="quantity" value="@item.Quantity" min="1" />
+                        <button type="submit">Update</button>
+                    </form>
+                </td>
+                <td>$@item.Dish.Price</td>
+                <td>$@(item.Quantity * item.Dish.Price)</td>
+                <td>
+                    <form method="post" action="@Url.Action("RemoveItem", "ShoppingCart")">
+                        <input type="hidden" name="cartItemId" value="@item.CartItemId" />
                         <button type="submit">Remove</button>
                     </form>
                 </td>
             </tr>
         }
-    </tbody>
-</table>
+    </table>
 
-<div class="total-sum">
-    Total: @Model.CartItems.Sum(ci => ci.Dish.Price * ci.Quantity)
-</div>
-
-<form asp-controller="Order" asp-action="Add" method="post">
-    @foreach (var cartItem in Model.CartItems)
-    {
-        <input type="hidden" name="cartItems" value="@cartItem.CartItemId" />
-    }
-    <button type="submit">Confirm Order</button>
-</form>
-
+    <form method="post" action="@Url.Action("ClearCart", "ShoppingCart")">
+        <button type="submit">Clear Cart</button>
+    </form>
+}

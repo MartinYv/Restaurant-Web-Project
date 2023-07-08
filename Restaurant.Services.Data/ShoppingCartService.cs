@@ -1,87 +1,104 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Restaurant.Data.Models;
+using Restaurant.Services.Data.Interfaces;
 using Restaurant2.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace Restaurant.Services.Data
 {
-    public class ShoppingCartService
+    public class ShoppingCartService : IShoppingCartService
     {
-        private const string CartSessionKey = "Cart";
-        private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly RestaurantDbContext _context;
 
-        public ShoppingCartService(IHttpContextAccessor httpContextAccessor, RestaurantDbContext context)
+        private readonly RestaurantDbContext _context;
+        public ShoppingCartService(RestaurantDbContext context)
         {
-            _httpContextAccessor = httpContextAccessor;
             _context = context;
         }
 
-        private ISession _session => _httpContextAccessor.HttpContext.Session;
-
-        public async Task <Cart> GetCart()
+        public void AddToCart(string cartId, int dishId, int quantity, int? orderId)
         {
-            Cart cart = _session.GetObjectFromJson<Cart>(CartSessionKey);
+            var cart = _context.Carts.Include(c => c.CartItems)
+                                     .ThenInclude(ci => ci.Dish)
+                                     .FirstOrDefault(c => c.CartId == cartId);
+
             if (cart == null)
             {
                 cart = new Cart
                 {
-                    CartId = Guid.NewGuid().ToString(),
-                    CartItems = new List<CartItem>()
+                    CartId = cartId
                 };
-            await _context.Carts.AddAsync(cart);
-                _session.SetObjectAsJson(CartSessionKey, cart);
+
+                _context.Carts.Add(cart);
             }
 
-            await _context.SaveChangesAsync();
-            return cart;
-        }
+            var cartItem = cart.CartItems.FirstOrDefault(ci => ci.DishId == dishId);
 
-        public async Task AddToCart(Dish dish)
-        {
-            Cart cart = await GetCart();
-            CartItem existingCartItem = cart.CartItems.FirstOrDefault(ci => ci.DishId == dish.Id);
-
-            if (existingCartItem != null)
+            if (cartItem == null)
             {
-                existingCartItem.Quantity++;
+                cartItem = new CartItem
+                {
+                    DishId = dishId,
+                    Quantity = quantity,
+                    OrderId = orderId  // Set the OrderId for the CartItem
+                };
+
+                cart.CartItems.Add(cartItem);
             }
             else
             {
-                CartItem newCartItem = new CartItem
-                {
-                    Cart = cart,
-                    CartId= cart.CartId,
-
-                    DishId = dish.Id,
-                    Dish = dish,
-                    Quantity = 1
-                };
-                cart.CartItems.Add(newCartItem);
+                cartItem.Quantity += quantity;
             }
 
-           await _context.SaveChangesAsync();
-            _session.SetObjectAsJson(CartSessionKey, cart);
+            _context.SaveChanges();
         }
 
 
-        public async Task RemoveFromCart(int cartItemId)
+        public void RemoveFromCart(string cartId, int cartItemId)
         {
-            Cart cart = await GetCart();
-            CartItem cartItemToRemove = cart.CartItems.FirstOrDefault(ci => ci.CartItemId == cartItemId);
+            var cartItem = _context.CartItems.FirstOrDefault(ci => ci.CartId == cartId && ci.CartItemId == cartItemId);
 
-            if (cartItemToRemove != null)
+            if (cartItem != null)
             {
-                cart.CartItems.Remove(cartItemToRemove);
-                await _context.SaveChangesAsync();
-                _session.SetObjectAsJson(CartSessionKey, cart);
+                _context.CartItems.Remove(cartItem);
+                _context.SaveChanges();
             }
         }
 
+        public void UpdateCartItemQuantity(string cartId, int cartItemId, int quantity)
+        {
+            var cartItem = _context.CartItems.FirstOrDefault(ci => ci.CartId == cartId && ci.CartItemId == cartItemId);
+
+            if (cartItem != null)
+            {
+                cartItem.Quantity = quantity;
+                _context.SaveChanges();
+            }
+        }
+
+        public void ClearCart(string cartId)
+        {
+            var cart = _context.Carts.Include(c => c.CartItems)
+                                     .FirstOrDefault(c => c.CartId == cartId);
+
+            if (cart != null)
+            {
+                _context.CartItems.RemoveRange(cart.CartItems);
+                _context.Carts.Remove(cart);
+                _context.SaveChanges();
+            }
+        }
+
+        public Cart GetCart(string cartId)
+        {
+            return _context.Carts.Include(c => c.CartItems)
+                                 .ThenInclude(ci => ci.Dish)
+                                 .FirstOrDefault(c => c.CartId == cartId);
+        }
     }
 }

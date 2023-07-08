@@ -4,6 +4,7 @@ using Restaurant.Data.Models;
 using Restaurant.Services.Data;
 using Restaurant.Services.Data.Interfaces;
 using Restaurant2.Data;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,7 +23,9 @@ builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
     options.Password.RequireUppercase = false;
     })
     .AddEntityFrameworkStores<RestaurantDbContext>();
+
 builder.Services.AddControllersWithViews();
+
 
 builder.Services.AddScoped<IDishTypeService, DishTypeService>();
 builder.Services.AddScoped<IDishService, DishService>();
@@ -31,7 +34,7 @@ builder.Services.AddScoped<IMenuTypeService, MenuTypeService>();
 builder.Services.AddScoped<IMenuService, MenuService>();
 
 builder.Services.AddScoped<IOrderService, OrderService>();
-builder.Services.AddScoped<ShoppingCartService>();
+builder.Services.AddScoped<IShoppingCartService, ShoppingCartService>();
 
 builder.Services.AddSession(); // asdasd
 

@@ -30,6 +30,8 @@ namespace Restaurant.Web.Controllers
             return View(model);
         }
 
+
+
         [HttpPost]
         public async Task<IActionResult> Add(AddOrderViewModel model, List<int> cartItems)
         {
@@ -44,7 +46,6 @@ namespace Restaurant.Web.Controllers
             return RedirectToAction(nameof(All));
         }
 
-
-
+       
     }
 }
