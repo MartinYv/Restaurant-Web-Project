@@ -11,13 +11,13 @@ namespace Restaurant.Data.Models
         [Key]
         public int Id { get; set; }
 
-        [Required]
-        [MaxLength(PhoneMaxLength)]
-        public string Phone { get; set; } = null!;
+        //[Required]
+        //[MaxLength(PhoneMaxLength)]
+        //public string Phone { get; set; } = null!;
 
-        [Required]
-        [MaxLength(AddressMaxLength)]
-        public string Address { get; set; } = null!;
+        //[Required]
+        //[MaxLength(AddressMaxLength)]
+        //public string Address { get; set; } = null!;
 
         [Required]
         [Precision(18, 2)]
@@ -26,8 +26,9 @@ namespace Restaurant.Data.Models
         public DateTime OrderPlaced { get; set; }
 
         [Required]
-        public DateTime TimePlaced { get; set; }
-        public DateTime? TimeCompleted { get; set; }
+        public DateTime  CreateDate { get; set; }
+
+        //public DateTime? TimeCompleted { get; set; }
 
         [Required]
         public bool IsCompleted { get; set; }
@@ -35,9 +36,10 @@ namespace Restaurant.Data.Models
         [ForeignKey("Customer")]
         public Guid CustomerId { get; set; }
         public ApplicationUser Customer { get; set; } = null!;
-
-        public List<CartItem> DishesOrdered { get; set; } = new List<CartItem>();
-
         public bool IsDeleted { get; set; }
+
+
+        public List<OrderDetail> OrderDetail { get; set; } = new List<OrderDetail>();
+
     }
 }

@@ -34,5 +34,8 @@ namespace Restaurant.Data.Models
         public DishType DishType { get; set; } = null!;
 
         public bool IsDeleted { get; set; }
+
+        public List<OrderDetail> OrderDetail { get; set; } = new List<OrderDetail>();
+        public List<CartDetail> CartDetail { get; set; } = new List<CartDetail>();
     }
 }

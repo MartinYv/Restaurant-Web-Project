@@ -23,8 +23,9 @@ namespace Restaurant2.Data
         public DbSet<Menu> Menus { get; set; } = null!;
         public DbSet<MenuType> MenuTypes { get; set; } = null!;
 
-        public DbSet<Cart> Carts { get; set; } = null!;
-        public DbSet<CartItem> CartItems { get; set; } = null!;
+        public DbSet<ShoppingCart> ShoppingCarts { get; set; } = null!;
+        public DbSet<CartDetail> CartDetails { get; set; } = null!;
+        public DbSet<OrderDetail> OrderDetails { get; set; } = null!;
 
         // public DbSet<UserOrder> UsersOrders { get; set; } = null!;
 

@@ -21,47 +21,15 @@ namespace Restaurant.Services.Data
         {
             context = _context;
         }
-         public async Task AddOrderAsync(AddOrderViewModel model, List<int> cartItems, Guid userId)
-         {
-             var user = await context.Users.FirstOrDefaultAsync(u => u.Id == userId);
-             if (user != null)
-             {
-       
-                        Order order = new Order
-                 {
-                     CustomerId = userId,
-                     Customer = user,
-                     OrderPlaced = DateTime.Now,
-                     Phone = model.Phone,
-                     Address = model.Address,
-                     DishesOrdered = new List<CartItem>() 
-                 };
-       
-                 context.Orders.Add(order);
-                 await context.SaveChangesAsync();
-       
-                 var cartItemsFromDb = await context.CartItems
-                     .Where(ci => cartItems.Contains(ci.CartItemId))
-                     .ToListAsync();
-
-                
-
-                 order.DishesOrdered.AddRange(cartItemsFromDb);
-       
-                 await context.SaveChangesAsync();
-             }
-         }
- 
+        
         public async Task<IEnumerable<OrderViewModel>> AllOrdersAcync()
         {
             var model = await context.Orders.Select(o => new OrderViewModel()
             {
                 CustomerId = o.CustomerId,
-                Address = o.Address,
-                Phone = o.Phone,
-                TimePlaced = o.TimePlaced,
+               
+                
                 IsCompleted = o.IsCompleted ? "False" : "True",
-                Price = o.DishesOrdered.Sum(d=>d.Quantity * d.Dish.Price)
             }).ToListAsync();
 
             return model;

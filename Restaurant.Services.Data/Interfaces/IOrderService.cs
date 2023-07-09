@@ -9,9 +9,6 @@ namespace Restaurant.Services.Data.Interfaces
 {
     public interface IOrderService
     {
-
-        Task AddOrderAsync(AddOrderViewModel model, List<int> cartItems, Guid userId);
-
         Task<IEnumerable<OrderViewModel>> AllOrdersAcync();
     }
 }

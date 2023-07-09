@@ -39,6 +39,6 @@ namespace Restaurant.ViewModels.Order
     //  [Required]
     //  public bool IsCompleted { get; set; }
     //
-      public List<CartItem> DishesOrdered { get; set; } = new List<CartItem>();
+      public List<CartDetail> DishesOrdered { get; set; } = new List<CartDetail>();
     }
 }

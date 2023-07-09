@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Restaurant2.Data;
 
@@ -11,9 +12,10 @@ using Restaurant2.Data;
 namespace Restaurant.Data.Migrations
 {
     [DbContext(typeof(RestaurantDbContext))]
-    partial class RestaurantDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230709120857_entitiesCHanged")]
+    partial class entitiesCHanged
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -225,29 +227,31 @@ namespace Restaurant.Data.Migrations
 
             modelBuilder.Entity("Restaurant.Data.Models.CartDetail", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("CartItemId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CartItemId"), 1L, 1);
+
+                    b.Property<int>("CartId")
+                        .HasColumnType("int");
 
                     b.Property<int>("DishId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("OrderId")
                         .HasColumnType("int");
 
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
 
-                    b.Property<int>("ShoppingCartId")
-                        .HasColumnType("int");
+                    b.HasKey("CartItemId");
 
-                    b.Property<double>("UnitPrice")
-                        .HasColumnType("float");
-
-                    b.HasKey("Id");
+                    b.HasIndex("CartId");
 
                     b.HasIndex("DishId");
 
-                    b.HasIndex("ShoppingCartId");
+                    b.HasIndex("OrderId");
 
                     b.ToTable("CartDetails");
                 });
@@ -529,21 +533,27 @@ namespace Restaurant.Data.Migrations
 
             modelBuilder.Entity("Restaurant.Data.Models.CartDetail", b =>
                 {
+                    b.HasOne("Restaurant.Data.Models.ShoppingCart", "Cart")
+                        .WithMany("CartDetails")
+                        .HasForeignKey("CartId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("Restaurant.Data.Models.Dish", "Dish")
-                        .WithMany("CartDetail")
+                        .WithMany()
                         .HasForeignKey("DishId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Restaurant.Data.Models.ShoppingCart", "ShoppingCart")
-                        .WithMany("CartDetails")
-                        .HasForeignKey("ShoppingCartId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.HasOne("Restaurant.Data.Models.Order", "Order")
+                        .WithMany()
+                        .HasForeignKey("OrderId");
+
+                    b.Navigation("Cart");
 
                     b.Navigation("Dish");
 
-                    b.Navigation("ShoppingCart");
+                    b.Navigation("Order");
                 });
 
             modelBuilder.Entity("Restaurant.Data.Models.Dish", b =>
@@ -586,7 +596,7 @@ namespace Restaurant.Data.Migrations
             modelBuilder.Entity("Restaurant.Data.Models.OrderDetail", b =>
                 {
                     b.HasOne("Restaurant.Data.Models.Dish", "Dish")
-                        .WithMany("OrderDetail")
+                        .WithMany()
                         .HasForeignKey("DishId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -625,13 +635,6 @@ namespace Restaurant.Data.Migrations
             modelBuilder.Entity("Restaurant.Data.Models.ApplicationUser", b =>
                 {
                     b.Navigation("OrdersPlaced");
-                });
-
-            modelBuilder.Entity("Restaurant.Data.Models.Dish", b =>
-                {
-                    b.Navigation("CartDetail");
-
-                    b.Navigation("OrderDetail");
                 });
 
             modelBuilder.Entity("Restaurant.Data.Models.Menu", b =>

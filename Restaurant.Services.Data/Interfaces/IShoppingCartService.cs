@@ -10,11 +10,12 @@ namespace Restaurant.Services.Data.Interfaces
 {
     public interface IShoppingCartService
     {
-        void AddToCart(string cartId, int dishId, int quantity,int? orderId);
-        void RemoveFromCart(string cartId, int cartItemId);
-        void UpdateCartItemQuantity(string cartId, int cartItemId, int quantity);
-        void ClearCart(string cartId);
-        Cart GetCart(string cartId);
+        Task<int> AddItem(int bookId, int qty);
+        Task<int> RemoveItem(int bookId);
+        Task<ShoppingCart> GetUserCart();
+        Task<int> GetCartItemCount(string userId = "");
+        Task<ShoppingCart> GetCart(string userId);
+        Task<bool> DoCheckout();
     }
 
 }

@@ -8,28 +8,26 @@ using System.Threading.Tasks;
 
 namespace Restaurant.Data.Models
 {
-    public class CartItem
+
+    public class CartDetail
     {
         [Key]
-        public int CartItemId { get; set; }
+        public int Id { get; set; }
+
+        [ForeignKey("Cart")]
+        public int ShoppingCartId { get; set; }
+        public ShoppingCart ShoppingCart { get; set; } = null!;
+
 
         [ForeignKey("Dish")]
         public int DishId { get; set; }
         public Dish Dish { get; set; } = null!;
 
+
+        [Required]
         public int Quantity { get; set; }
 
-        [ForeignKey("Cart")]
-        public string CartId { get; set; } = null!;
-        public Cart Cart { get; set; } = null!;
-
-        [ForeignKey("Order")]
-        public int? OrderId { get; set; }
-        public Order? Order { get; set; } = null!;
-
-
-
+        [Required]
+        public double UnitPrice { get; set; }
     }
-
-
 }

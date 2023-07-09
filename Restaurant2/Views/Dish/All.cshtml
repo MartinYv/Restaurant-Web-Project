@@ -33,7 +33,7 @@
 
         <h2>@dish.Name</h2>
         <p>Price: @dish.Price</p>
-        <form asp-controller="ShoppingCart" asp-action="AddToCart" method="post">
+        <form asp-controller="Cart" asp-action="AddItem" method="post">
             <input type="hidden" name="dishId" value="@dish.Id" />
             <button type="submit">Add to Cart</button>
         </form>

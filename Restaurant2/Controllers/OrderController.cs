@@ -32,20 +32,7 @@ namespace Restaurant.Web.Controllers
 
 
 
-        [HttpPost]
-        public async Task<IActionResult> Add(AddOrderViewModel model, List<int> cartItems)
-        {
-            if (!ModelState.IsValid)
-            {
-                return View(model);
-            }
-
-            var userId = Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
-            await orderService.AddOrderAsync(model, cartItems, userId);
-
-            return RedirectToAction(nameof(All));
-        }
-
+       
        
     }
 }
