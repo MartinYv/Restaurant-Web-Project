@@ -11,13 +11,16 @@ namespace Restaurant.Data.Models
         [Key]
         public int Id { get; set; }
 
-        //[Required]
-        //[MaxLength(PhoneMaxLength)]
-        //public string Phone { get; set; } = null!;
+        [Required]
+        public string Name { get; set; } = null!;
 
-        //[Required]
-        //[MaxLength(AddressMaxLength)]
-        //public string Address { get; set; } = null!;
+        [Required]
+        [MaxLength(PhoneMaxLength)]
+        public string Phone { get; set; } = null!;
+
+        [Required]
+        [MaxLength(AddressMaxLength)]
+        public string Address { get; set; } = null!;
 
         [Required]
         [Precision(18, 2)]

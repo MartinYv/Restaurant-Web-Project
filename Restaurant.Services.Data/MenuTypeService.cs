@@ -46,7 +46,11 @@ namespace Restaurant.Services.Data
         public async Task DeleteMenuTypeAsync(int id)
         {
             var menuType = await context.MenuTypes.Where(mt => mt.Id == id).FirstOrDefaultAsync();
+            if (menuType != null)
+            {
             menuType.IsDeleted = true;
+            }
+
         }
     }
 }

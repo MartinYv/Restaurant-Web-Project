@@ -1,4 +1,5 @@
 ﻿using Restaurant.Data.Models;
+using Restaurant.ViewModels.Order;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,7 +16,7 @@ namespace Restaurant.Services.Data.Interfaces
         Task<ShoppingCart> GetUserCart();
         Task<int> GetCartItemCount(string userId = "");
         Task<ShoppingCart> GetCart(string userId);
-        Task<bool> DoCheckout();
+        Task<bool> DoCheckout(OrderUsersInfoViewModel usersInfo);
     }
 
 }

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Restaurant.Data.Models;
 using Restaurant.Services.Data.Interfaces;
+using Restaurant.ViewModels.Order;
 using Restaurant2.Data;
 using System;
 using System.Collections.Generic;
@@ -160,8 +161,11 @@ namespace Restaurant.Services.Data
             return data.Count;
         }
 
-        public async Task<bool> DoCheckout()
+        public async Task<bool> DoCheckout(OrderUsersInfoViewModel usersInfo)
         {
+
+
+
             using var transaction = context.Database.BeginTransaction();
             try
             {
@@ -189,14 +193,19 @@ namespace Restaurant.Services.Data
 
                 var order = new Order
                 {
+                    Name = usersInfo.Name,
+                    Address = usersInfo.Address,
+                    Phone = usersInfo.Phone,
                     CustomerId = Guid.Parse(userId),
                     CreateDate = DateTime.UtcNow,
                     IsCompleted = false,
                     IsDeleted = false
                     //OrderStatusId = 1//pending
                 };
+
                 context.Orders.Add(order);
                 context.SaveChanges();
+
                 foreach (var item in cartDetail)
                 {
                     var orderDetail = new OrderDetail
@@ -206,6 +215,7 @@ namespace Restaurant.Services.Data
                         Quantity = item.Quantity,
                         UnitPrice = item.UnitPrice
                     };
+
                     context.OrderDetails.Add(orderDetail);
                 }
 

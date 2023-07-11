@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Restaurant.Services.Data.Interfaces;
+using Restaurant.ViewModels.Order;
 
 namespace Restaurant.Web.Controllers
 {
@@ -43,9 +44,9 @@ namespace Restaurant.Web.Controllers
             return Ok(cartItem);
         }
 
-        public async Task<IActionResult> Checkout()
+        public async Task<IActionResult> Checkout(OrderUsersInfoViewModel usersInfo)
         {
-            bool isCheckedOut = await _cartRepo.DoCheckout();
+            bool isCheckedOut = await _cartRepo.DoCheckout(usersInfo);
 
             if (!isCheckedOut)
             {

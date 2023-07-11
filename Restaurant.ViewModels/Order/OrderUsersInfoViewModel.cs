@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace Restaurant.ViewModels.Order
 {
     using static Restaurant.Common.EntityValidationConstants.Order;
-    public class AddOrderViewModel
+    public class OrderUsersInfoViewModel
     {
 
         // public Guid? CustomerId { get; set; }

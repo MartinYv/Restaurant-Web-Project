@@ -23,16 +23,26 @@ namespace Restaurant.Web.Controllers
             return View(model);
         }
 
+
         [HttpGet]
-        public IActionResult Add()
+        public IActionResult FinishOrder()
         {
-            var model = new AddOrderViewModel();
-            return View(model);
+            OrderUsersInfoViewModel usersInfo = new OrderUsersInfoViewModel();
+            return View(usersInfo);
         }
 
+        [HttpPost]
+        public IActionResult FinishOrder(OrderUsersInfoViewModel usersInfo)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(usersInfo);
+            }
 
+           
 
-       
-       
+            return RedirectToAction("CheckOut", "Cart", usersInfo);
+        }
+
     }
 }
