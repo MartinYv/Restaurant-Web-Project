@@ -249,7 +249,7 @@ namespace Restaurant.Data.Migrations
 
                     b.HasIndex("ShoppingCartId");
 
-                    b.ToTable("CartDetails");
+                    b.ToTable("CartDetails", (string)null);
                 });
 
             modelBuilder.Entity("Restaurant.Data.Models.Dish", b =>
@@ -294,7 +294,7 @@ namespace Restaurant.Data.Migrations
 
                     b.HasIndex("MenuId");
 
-                    b.ToTable("Dishes");
+                    b.ToTable("Dishes", (string)null);
                 });
 
             modelBuilder.Entity("Restaurant.Data.Models.DishType", b =>
@@ -315,7 +315,7 @@ namespace Restaurant.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("DishTypes");
+                    b.ToTable("DishTypes", (string)null);
                 });
 
             modelBuilder.Entity("Restaurant.Data.Models.Menu", b =>
@@ -336,7 +336,7 @@ namespace Restaurant.Data.Migrations
 
                     b.HasIndex("MenuTypeId");
 
-                    b.ToTable("Menus");
+                    b.ToTable("Menus", (string)null);
                 });
 
             modelBuilder.Entity("Restaurant.Data.Models.MenuType", b =>
@@ -357,7 +357,7 @@ namespace Restaurant.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("MenuTypes");
+                    b.ToTable("MenuTypes", (string)null);
                 });
 
             modelBuilder.Entity("Restaurant.Data.Models.Order", b =>
@@ -405,7 +405,7 @@ namespace Restaurant.Data.Migrations
 
                     b.HasIndex("CustomerId");
 
-                    b.ToTable("Orders");
+                    b.ToTable("Orders", (string)null);
                 });
 
             modelBuilder.Entity("Restaurant.Data.Models.OrderDetail", b =>
@@ -434,7 +434,7 @@ namespace Restaurant.Data.Migrations
 
                     b.HasIndex("OrderId");
 
-                    b.ToTable("OrderDetails");
+                    b.ToTable("OrderDetails", (string)null);
                 });
 
             modelBuilder.Entity("Restaurant.Data.Models.ShoppingCart", b =>
@@ -455,7 +455,7 @@ namespace Restaurant.Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("ShoppingCarts");
+                    b.ToTable("ShoppingCarts", (string)null);
                 });
 
             modelBuilder.Entity("Restaurant.Data.Models.Table", b =>
@@ -487,7 +487,7 @@ namespace Restaurant.Data.Migrations
 
                     b.HasIndex("CustomerId");
 
-                    b.ToTable("Tables");
+                    b.ToTable("Tables", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>

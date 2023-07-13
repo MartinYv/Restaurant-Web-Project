@@ -14,5 +14,10 @@
 
 		<p class="mb-0">Type Id: @type.Id</p>
 		<p class="mb-0">Type Name: @type.Name</p>
+
+		<form asp-controller="MenuType" asp-action="Delete" method="post">
+			<input type="hidden" name="typeId" value="@type.Id" />
+			<button type="submit">Delete</button>
+		</form>
 	}
 </div>

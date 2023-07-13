@@ -40,11 +40,11 @@ namespace Restaurant.Web.Controllers
             return View(model);
         }
 
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> Delete(int typeId)
         {
             try
             {
-                await menuTypeService.DeleteMenuTypeAsync(id);
+                await menuTypeService.DeleteMenuTypeAsync(typeId);
                 return RedirectToAction(nameof(All));
             }
             catch (Exception)

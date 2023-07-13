@@ -42,8 +42,8 @@ namespace Restaurant.Web.Controllers
             catch (Exception)
             {
 
-                ModelState.AddModelError("", "There isnt menu with that type of dish.");
-                return View(nameof(All));// to do 
+                ModelState.AddModelError("", "There isnt menu with that type of dish. First add Menu with that type.");
+                return RedirectToAction(nameof(All));// to do 
             }
 
         }
@@ -54,15 +54,7 @@ namespace Restaurant.Web.Controllers
             return View(model);
         }
 
-        public async Task<IActionResult> AddToCollection(int id)
-        {
-            var userId = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
-            Guid userIdGuid = Guid.Parse(userId);
-
-            await dishService.AddDishToUserCollectionAsync(id, userIdGuid);
-            return RedirectToAction(nameof(All));
-        }
-
+      
         public async Task<IActionResult> Delete(int id)
         {          
 

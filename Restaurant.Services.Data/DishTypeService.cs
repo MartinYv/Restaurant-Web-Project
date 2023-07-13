@@ -16,31 +16,49 @@ namespace Restaurant.Services.Data
         }
         public async Task AddDishTypeAsync(AddDishTypeViewModel model)
         {
-            DishType dishType = new DishType()
+            if (!context.DishTypes.Where(t=>t.IsDeleted == false).Any(t=>t.Name == model.Name))
             {
-                Name = model.Name
-            };
+                DishType dishType = new DishType()
+                {
+                    Name = model.Name
+                };
 
-            await context.DishTypes.AddAsync(dishType);
-            await context.SaveChangesAsync();
+                await context.DishTypes.AddAsync(dishType);
+                await context.SaveChangesAsync();
+            }
+            else
+            {
+                throw new ArgumentException("Already existing type with that name.");                
+            }
+          
         }
 
-   
+
 
         public async Task<IEnumerable<AllDishTypesViewModel>> AllDishTypesAsync()
         {
-            return await context.DishTypes
-                .Select(dt=> new AllDishTypesViewModel()
+            return await context.DishTypes.Where(dt=>dt.IsDeleted == false)
+                .Select(dt => new AllDishTypesViewModel()
                 {
                     Id = dt.Id,
                     Name = dt.Name
                 }).ToListAsync();
         }
 
-        public async Task DeleteDishTypeAsync(int id)
+        public async Task DeleteDishTypeAsync(int typeId)
         {
-            var dishType = await context.DishTypes.Where(dt => dt.Id == id).FirstOrDefaultAsync();
-            dishType.IsDeleted = true;
+
+            var dishType = await context.DishTypes.Where(dt => dt.Id == typeId && dt.IsDeleted == false).FirstOrDefaultAsync();
+            if (dishType != null)
+            {
+                dishType.IsDeleted = true;
+                await context.SaveChangesAsync();
+            }
+            else
+            {
+                throw new ArgumentException("Invalid dish type Id");
+            }
+
         }
     }
 }

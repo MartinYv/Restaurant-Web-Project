@@ -9,10 +9,15 @@
 <hr />
 
 <div class="text-center row">
-	@foreach (var type in Model)
+	@foreach (var menu in Model)
 	{
 
-		<p class="mb-0">Type Id: @type.Id</p>
-		<p class="mb-0">Type Name: @type.MenuType</p>
+		<p class="mb-0">Type Id: @menu.Id</p>
+		<p class="mb-0">Type Name: @menu.MenuType</p>
+
+		<form asp-controller="Menu" asp-action="Delete" method="post">
+			<input type="hidden" name="menuId" value="@menu.Id" />
+			<button type="submit">Delete</button>
+		</form>
 	}
 </div>

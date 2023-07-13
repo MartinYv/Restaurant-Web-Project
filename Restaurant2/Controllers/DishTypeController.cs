@@ -39,9 +39,9 @@ namespace Restaurant.Web.Controllers
             return View(model);
         }
 
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> Delete(int typeId)
         {
-            await dishTypeService.DeleteDishTypeAsync(id);
+            await dishTypeService.DeleteDishTypeAsync(typeId);
             return RedirectToAction(nameof(All));
         }
     }

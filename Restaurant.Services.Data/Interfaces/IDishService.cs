@@ -8,11 +8,7 @@ namespace Restaurant.Services.Data.Interfaces
         Task Add(AddDishViewModel model);
         Task<IEnumerable<DishType>> AllDishTypesAsync();
         Task<IEnumerable<AllDishesViewModel>> AllDishesAsync();
-
-        Task AddDishToUserCollectionAsync(int id, Guid userId);
-
-        Task<Dish> GetDishById(int id);
-
+        Task<Dish?> GetDishById(int id);
         Task DeleteDishByIdAsync(int id);
     }
 }

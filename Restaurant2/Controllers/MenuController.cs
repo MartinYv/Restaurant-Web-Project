@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Restaurant.Services.Data.Interfaces;
 using Restaurant.ViewModels.Models.Menu;
 
@@ -33,16 +34,19 @@ namespace Restaurant.Web.Controllers
             {
                 return View(model);
             }
-           var menuTypes= await menuService.GetAllMenuTypesAsync();
 
-          // if (menuTypes.Any(x=>x.Id == model.MenuTypeId))
-          // {
-          //     ModelState.AddModelError("", "Menu with the same type is already added."); // its not writen on the screen
-          //    return RedirectToAction(nameof(Add));
-          // }
-           await  menuService.AddMenuAcync(model);
-            return RedirectToAction(nameof(All));
-        }
+            try
+            {
+				await menuService.AddMenuAcync(model);
+				return RedirectToAction(nameof(All));
+			}
+            catch (Exception ex)
+            {
+                throw new ArgumentException(ex.Message);
+
+			}
+
+		}
 
         public async Task<IActionResult> All()
         {
@@ -50,9 +54,11 @@ namespace Restaurant.Web.Controllers
             return View(model);
         }
 
-      //  public async Task<IActionResult> AddOrderToUser()
-      //  {
-      //
-      //  }
+        public async Task<IActionResult> Delete(int menuId)
+        {
+            await menuService.DeleteMenuAsync(menuId);
+            return RedirectToAction(nameof(All));
+
+        }
     }
 }

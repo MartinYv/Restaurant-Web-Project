@@ -43,12 +43,13 @@ namespace Restaurant.Services.Data
                 }).ToListAsync();
         }
 
-        public async Task DeleteMenuTypeAsync(int id)
+        public async Task DeleteMenuTypeAsync(int typeId)
         {
-            var menuType = await context.MenuTypes.Where(mt => mt.Id == id).FirstOrDefaultAsync();
+            var menuType = await context.MenuTypes.Where(mt=> mt.IsDeleted == false && mt.Id == typeId).FirstOrDefaultAsync();
             if (menuType != null)
             {
             menuType.IsDeleted = true;
+                await context.SaveChangesAsync();
             }
 
         }
