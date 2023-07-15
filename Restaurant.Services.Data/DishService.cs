@@ -11,10 +11,13 @@ namespace Restaurant.Services.Data
 	public class DishService : IDishService
 	{
 		private readonly RestaurantDbContext context;
+		private readonly IMenuService menuService;
 
-		public DishService(RestaurantDbContext _context)
+
+		public DishService(RestaurantDbContext _context, IMenuService menuService)
 		{
 			context = _context;
+			this.menuService = menuService;
 		}
 
 
@@ -33,23 +36,11 @@ namespace Restaurant.Services.Data
 				Price = model.Price,
 				IsDeleted = false
 			};
+	
 
+			await menuService.AddDishAsync(dish);		
+			await context.Dishes.AddAsync(dish);		
 			
-
-			var menu = await context.Menus.Where(m=>m.IsDeleted == false && m.MenuType.Name == dish.DishType.Name).FirstOrDefaultAsync();  // need to fix adding dish to menu, everytime menu.dishes.count is ZERO
-			if (menu == null)
-			{
-				throw new ArgumentException("There isn't menu with that type of dish. First add the menu.");
-			}
-
-			if (menu.Dishes.Where(d=>d.IsDeleted == false).Any(d=>d.Name == dish.Name))
-			{
-				throw new ArgumentException("Dish with that name is already added");
-			}
-
-			menu.Dishes.Add(dish);
-			
-			await context.Dishes.AddAsync(dish);
 			await context.SaveChangesAsync();
 		}
 

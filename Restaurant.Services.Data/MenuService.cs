@@ -4,6 +4,7 @@ using Restaurant.Services.Data.Interfaces;
 using Restaurant.ViewModels.Models.Menu;
 using Restaurant2.Data;
 using System.Security.Cryptography.X509Certificates;
+using Restaurant2.Models;
 
 namespace Restaurant.Services.Data
 {
@@ -17,7 +18,7 @@ namespace Restaurant.Services.Data
 		}
 		public async Task AddMenuAcync(AddMenuViewModel model)
 		{
-			bool isMenuExist = context.Menus.Where(m=>m.IsDeleted == false).Any(mt => mt.MenuType.Id == model.Id);
+			bool isMenuExist = context.Menus.Where(m => m.IsDeleted == false).Any(mt => mt.MenuType.Id == model.Id);
 
 			if (isMenuExist == true)
 			{
@@ -27,7 +28,7 @@ namespace Restaurant.Services.Data
 			Menu menu = new Menu()
 			{
 				MenuTypeId = model.Id
-				
+
 			};
 
 			await context.Menus.AddAsync(menu);
@@ -36,21 +37,21 @@ namespace Restaurant.Services.Data
 
 		public async Task<IEnumerable<AllMenusViewModel>> AllMenusAsync()
 		{
-			return await context.Menus.Where(m=>m.IsDeleted == false).Select(m => 
-			      new AllMenusViewModel()
-				{
+			return await context.Menus.Where(m => m.IsDeleted == false).Select(m =>
+				  new AllMenusViewModel()
+				  {
 					  Id = m.Id,
-					MenuType = m.MenuType.Name
-				}).ToListAsync();
+					  MenuType = m.MenuType.Name
+				  }).ToListAsync();
 		}
 
 
-        public async Task<IEnumerable<MenuType>> GetAllMenuTypesAsync()
+		public async Task<IEnumerable<MenuType>> GetAllMenuTypesAsync()
 		{
 			return await context.MenuTypes.Where(m => m.IsDeleted == false).ToListAsync();
 		}
-        public async Task DeleteMenuAsync(int menuId)
-        {
+		public async Task DeleteMenuAsync(int menuId)
+		{
 			var menu = await context.Menus.Where(m => m.IsDeleted == false).FirstOrDefaultAsync(m => m.Id == menuId);
 
 			if (menu != null)
@@ -58,6 +59,28 @@ namespace Restaurant.Services.Data
 				menu.IsDeleted = true;
 				await context.SaveChangesAsync();
 			}
-        }
+		}
+
+		public async Task<Menu?> GetMenuByName(string menuName)
+		{
+			return await context.Menus.Where(m => m.MenuType.Name == menuName && m.IsDeleted == false).Include(x => x.MenuType).Include(x => x.Dishes).FirstOrDefaultAsync();
+		}
+
+		public async Task AddDishAsync(Dish dish)
+		{
+			Menu menu = await GetMenuByName(dish.DishType.Name);
+
+			if (menu == null)
+			{
+				throw new ArgumentException("There isn't menu with that type of dishes. First add the menu.");
+			}
+
+			if (menu.Dishes.Where(d => d.IsDeleted == false).Any(d => d.Name == dish.Name))
+			{
+				throw new ArgumentException("Dish with that name is already added");
+			}
+
+			menu.Dishes.Add(dish);
+		}
 	}
 }

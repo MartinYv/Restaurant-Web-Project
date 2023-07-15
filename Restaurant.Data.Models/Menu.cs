@@ -12,7 +12,7 @@ namespace Restaurant.Data.Models
         public int MenuTypeId { get; set; }
         public MenuType MenuType { get; set; } = null!;
 
-        public HashSet<Dish> Dishes { get; set; } = new HashSet<Dish>();
+        public List<Dish> Dishes { get; set; } = new List<Dish>();
        // [ForeignKey("Dish")]
        // public int DishId { get; set; }
        // public Dish Dish { get; set; } = null!;

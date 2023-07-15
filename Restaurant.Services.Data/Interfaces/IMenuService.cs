@@ -11,5 +11,8 @@ namespace Restaurant.Services.Data.Interfaces
 
         Task <IEnumerable<AllMenusViewModel>> AllMenusAsync();
         Task DeleteMenuAsync(int menuId);
-    }
+
+        Task <Menu?> GetMenuByName(string menuName);
+        Task AddDishAsync(Dish dish);
+	}
 }

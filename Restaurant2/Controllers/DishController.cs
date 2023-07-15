@@ -39,10 +39,10 @@ namespace Restaurant.Web.Controllers
                 await dishService.Add(model);
                 return RedirectToAction(nameof(All));
             }
-            catch (Exception)
+            catch (Exception ex)
             {
 
-                ModelState.AddModelError("", "There isnt menu with that type of dish. First add Menu with that type.");
+                ModelState.AddModelError("", ex.Message);
                 return RedirectToAction(nameof(All));// to do 
             }
 
