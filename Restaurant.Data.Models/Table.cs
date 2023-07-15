@@ -16,19 +16,15 @@ namespace Restaurant.Data.Models
         [Key]
         public int Id { get; set; }
 
+        [Required]
+        [MaxLength(20)]// to do constant
+		public int Number { get; set; }
+
         [MaxLength(SeatsMaxLength)]
         public int Seats { get; set; }
 
-        [Required]
-        [MaxLength(ReservationHourMaxLength)]
-        public int Hour { get; set; }
 
-        [Required]
-        public bool IsReserved { get; set; }
-
-        [ForeignKey("Customer")]
-        public Guid? CustomerId { get; set; } 
-        public ApplicationUser? Customer { get; set; }
+        public bool IsReserved { get; set; }       
         public bool IsDeleted { get; set; }
 
     }

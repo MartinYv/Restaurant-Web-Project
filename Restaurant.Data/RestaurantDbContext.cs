@@ -27,11 +27,10 @@ namespace Restaurant2.Data
         public DbSet<CartDetail> CartDetails { get; set; } = null!;
         public DbSet<OrderDetail> OrderDetails { get; set; } = null!;
 
-        // public DbSet<UserOrder> UsersOrders { get; set; } = null!;
+        public DbSet<Reservation> Reservations { get; set; } = null!;
 
 
-
-        protected override void OnModelCreating(ModelBuilder builder)
+		protected override void OnModelCreating(ModelBuilder builder)
         {
 
             //builder.Entity<UserOrder>().HasKey(k => new { k.OrderId, k.UserId});

@@ -27,7 +27,7 @@
             public const int SeatsMinLength = 2;
             public const int SeatsMaxLength = 10;
 
-            public const int ReservationHourMaxLength = 11;
+            public const int ReservationHourMaxLength = 23;
         }
 
         public static class Order
