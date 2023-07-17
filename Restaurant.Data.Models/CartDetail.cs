@@ -14,7 +14,7 @@ namespace Restaurant.Data.Models
         [Key]
         public int Id { get; set; }
 
-        [ForeignKey("Cart")]
+        [ForeignKey("Cart")] 
         public int ShoppingCartId { get; set; }
         public ShoppingCart ShoppingCart { get; set; } = null!;
 

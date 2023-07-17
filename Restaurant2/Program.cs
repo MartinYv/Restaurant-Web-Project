@@ -34,7 +34,10 @@ builder.Services.AddScoped<IMenuTypeService, MenuTypeService>();
 builder.Services.AddScoped<IMenuService, MenuService>();
 
 builder.Services.AddScoped<IOrderService, OrderService>();
+
 builder.Services.AddScoped<IShoppingCartService, ShoppingCartService>();
+
+builder.Services.AddScoped<ITableService, TableService>();
 
 builder.Services.AddSession(); // asdasd
 
