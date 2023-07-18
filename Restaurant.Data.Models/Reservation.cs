@@ -1,11 +1,12 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using static Restaurant.Common.EntityValidationConstants.Table;
+using static Restaurant.Common.EntityValidationConstants.Reservation;
 
 namespace Restaurant.Data.Models
 {
@@ -23,12 +24,21 @@ namespace Restaurant.Data.Models
 		public string LastName { get; set; } = null!;
 
 		[Required]
-        public int Phone { get; set; }
-        [Required]
-		[MaxLength(ReservationHourMaxLength)]
-		public int Hour { get; set; }
+		public string Phone { get; set; } = null!;
 
-		[ForeignKey("Table")]
+
+		[Required]
+
+		public string Hour { get; set; } = null!;
+
+		[Required]
+        public DateTime Date { get; set; }
+
+        [Required]
+		[MaxLength(10)]
+        public int Persons { get; set; }
+
+        [ForeignKey("Table")]
         public int TableId { get; set; }
 		public Table Table { get; set; } = null!;
 

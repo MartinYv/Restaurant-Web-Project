@@ -1,0 +1,48 @@
+﻿@*@using Restaurant.ViewModels.Models.Reservation;
+@model AddReservationInfoViewModel
+
+<h2>Create Reservation</h2>
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.FirstName)
+        @Html.TextBoxFor(model => model.FirstName, new { @class = "form-control" })
+        @Html.ValidationMessageFor(model => model.FirstName)
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.LastName)
+        @Html.TextBoxFor(model => model.LastName, new { @class = "form-control" })
+        @Html.ValidationMessageFor(model => model.LastName)
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.Phone)
+        @Html.TextBoxFor(model => model.Phone, new { @class = "form-control" })
+        @Html.ValidationMessageFor(model => model.Phone)
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.TableId)
+        @Html.DropDownListFor(model => model.TableId, new SelectList(Model.AvailableTables, "Id", "Number"), "Select a Table", new { @class = "form-control" })
+        @Html.ValidationMessageFor(model => model.TableId)
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.Date)
+        @Html.TextBoxFor(model => model.Date, "{0:MM/dd/yyyy}", new { @class = "form-control datepicker" })
+        @Html.ValidationMessageFor(model => model.Date)
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.Hour)
+        @Html.TextBoxFor(model => model.Hour, "{0:hh\\:mm}", new { @class = "form-control timepicker" })
+        @Html.ValidationMessageFor(model => model.Hour)
+    </div>
+
+    <button type="submit" class="btn btn-primary">Create Reservation</button>
+}
+*@

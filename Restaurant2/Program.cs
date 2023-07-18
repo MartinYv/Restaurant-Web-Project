@@ -39,6 +39,8 @@ builder.Services.AddScoped<IShoppingCartService, ShoppingCartService>();
 
 builder.Services.AddScoped<ITableService, TableService>();
 
+builder.Services.AddScoped<IReservationService, ReservationService>();
+
 builder.Services.AddSession(); // asdasd
 
 builder.Services.AddDistributedMemoryCache(); // This is required to store session data in memory

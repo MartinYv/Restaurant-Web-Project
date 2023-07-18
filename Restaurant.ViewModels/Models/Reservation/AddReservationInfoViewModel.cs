@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Restaurant.ViewModels.Models.Reservation
 {
+	using static Restaurant.Common.EntityValidationConstants.Reservation;
 	using static Restaurant.Common.EntityValidationConstants.Table;
-	public class AddReservationViewModel
+	public class AddReservationInfoViewModel
 	{
 		[Required]
 		[MinLength(2)]
@@ -22,11 +19,15 @@ namespace Restaurant.ViewModels.Models.Reservation
 
 		[Required]
 		[Phone]
-		public int Phone { get; set; }
+		public string Phone { get; set; } = null!;
 
 		[Required]
-		[MinLength(9)]
-		[MaxLength(ReservationHourMaxLength)]
-		public int Hour { get; set; }
-	}
+		[Range((double)ReservationHourMinLength, (double)ReservationHourMaxLength)]
+		[Precision(4, 2)]
+		public decimal Hour { get; set; }
+
+		[Required]
+		[Range(2,10)]
+        public int Persons { get; set; }
+    }
 }

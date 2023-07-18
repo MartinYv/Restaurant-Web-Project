@@ -12,13 +12,16 @@ namespace Restaurant.Web.Controllers
 		{
 			reservationService = _reservationService;
 		}
+
+		[HttpGet]
 		public IActionResult Add()
 		{
-			var model = new AddReservationViewModel();
+			var model = new AddReservationInfoViewModel();
 			return View(model);
 		}
 
-		public async Task<IActionResult> Add(AddReservationViewModel model)
+		[HttpPost]
+		public async Task<IActionResult> Add(AddReservationInfoViewModel model)
 		{
 			if (!ModelState.IsValid)
 			{
@@ -26,12 +29,16 @@ namespace Restaurant.Web.Controllers
 			}
 
 			await reservationService.AddReservationAsync(model);
+
+			
+
 			return RedirectToAction(nameof(All));
 		}
 
-		public IActionResult All()
+		public async Task<IActionResult> All()
 		{
-			return RedirectToAction(nameof(Add)); // to change it! 
+			var model = await reservationService.AllReservationsAsync();
+			return View(model);
 		}
 
 	}
