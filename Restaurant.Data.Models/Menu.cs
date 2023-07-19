@@ -8,9 +8,9 @@ namespace Restaurant.Data.Models
         [Key]
         public int Id { get; set; }
 
-        [ForeignKey("MenuType")]
-        public int MenuTypeId { get; set; }
-        public MenuType MenuType { get; set; } = null!;
+        [ForeignKey("DishType")]
+        public int DishTypeId { get; set; }
+        public DishType DishType { get; set; } = null!;
 
         public List<Dish> Dishes { get; set; } = new List<Dish>();
        // [ForeignKey("Dish")]

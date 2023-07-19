@@ -1,48 +1,54 @@
-﻿@*@using Restaurant.ViewModels.Models.Reservation;
+﻿@using Restaurant.ViewModels.Models.Reservation;
+
 @model AddReservationInfoViewModel
 
-<h2>Create Reservation</h2>
-
-@using (Html.BeginForm())
-{
-    @Html.AntiForgeryToken()
-
-    <div class="form-group">
-        @Html.LabelFor(model => model.FirstName)
-        @Html.TextBoxFor(model => model.FirstName, new { @class = "form-control" })
-        @Html.ValidationMessageFor(model => model.FirstName)
-    </div>
-
-    <div class="form-group">
-        @Html.LabelFor(model => model.LastName)
-        @Html.TextBoxFor(model => model.LastName, new { @class = "form-control" })
-        @Html.ValidationMessageFor(model => model.LastName)
-    </div>
-
-    <div class="form-group">
-        @Html.LabelFor(model => model.Phone)
-        @Html.TextBoxFor(model => model.Phone, new { @class = "form-control" })
-        @Html.ValidationMessageFor(model => model.Phone)
-    </div>
-
-    <div class="form-group">
-        @Html.LabelFor(model => model.TableId)
-        @Html.DropDownListFor(model => model.TableId, new SelectList(Model.AvailableTables, "Id", "Number"), "Select a Table", new { @class = "form-control" })
-        @Html.ValidationMessageFor(model => model.TableId)
-    </div>
-
-    <div class="form-group">
-        @Html.LabelFor(model => model.Date)
-        @Html.TextBoxFor(model => model.Date, "{0:MM/dd/yyyy}", new { @class = "form-control datepicker" })
-        @Html.ValidationMessageFor(model => model.Date)
-    </div>
-
-    <div class="form-group">
-        @Html.LabelFor(model => model.Hour)
-        @Html.TextBoxFor(model => model.Hour, "{0:hh\\:mm}", new { @class = "form-control timepicker" })
-        @Html.ValidationMessageFor(model => model.Hour)
-    </div>
-
-    <button type="submit" class="btn btn-primary">Create Reservation</button>
+@{
+    ViewBag.Title = "Add Reservation";
 }
-*@
+
+<h2 class="text-center">@ViewBag.Title</h2>
+<hr />
+
+<div class="row">
+    <div class="col-sm-12 offset-lg-2 col-lg-8 offset-xl-3 col-xl-6">
+        <form asp-action="Add" method="post">
+            <div class="mb-3">
+                <label asp-for="@Model.FirstName" class="form-label">First Name</label>
+                <input asp-for="@Model.FirstName" class="form-control" aria-required="true" />
+                <span asp-validation-for="@Model.FirstName" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="@Model.LastName" class="form-label">Last Name</label>
+                <input asp-for="@Model.LastName" class="form-control" aria-required="true" />
+                <span asp-validation-for="@Model.LastName" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="@Model.Phone" class="form-label">Phone</label>
+                <textarea asp-for="@Model.Phone" class="form-control" aria-required="true" rows="5"></textarea>
+                <span asp-validation-for="Phone" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="@Model.Hour" class="form-label">When you want to arrive?</label>
+                <input asp-for="@Model.Hour" class="form-control" aria-required="true" />
+                <span asp-validation-for="@Model.Hour" class="text-danger"></span>
+            </div>
+            
+            <div class="mb-3">
+                <label asp-for="@Model.Persons" class="form-label">For how many persons?</label>
+                <input asp-for="@Model.Persons" class="form-control" aria-required="true" />
+                <span asp-validation-for="@Model.Persons" class="text-danger"></span>
+            </div>
+            
+            <div class="mb-3">
+                <input class="btn btn-primary" type="submit" value="Add" />
+            </div>
+
+
+        </form>
+    </div>
+</div>
+
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

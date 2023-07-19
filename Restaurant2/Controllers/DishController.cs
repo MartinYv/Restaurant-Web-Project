@@ -1,4 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.Migrations.Operations;
+using Restaurant.Data.Models;
+using Restaurant.Services.Data;
 using Restaurant.Services.Data.Interfaces;
 using Restaurant.ViewModels.Models.Dish;
 using System.Reflection.Metadata.Ecma335;
@@ -67,10 +70,42 @@ namespace Restaurant.Web.Controllers
             {
 
                 throw new ArgumentException("Invalid dish Id");
-            }
-            
+            }    
         }
-    }
+
+
+        [HttpGet]
+        public async Task<IActionResult> Edit(int id)
+        {
+            var model = await dishService.GetDishForEditByIdAsync(id);
+            return View(model);
+        }
+
+
+
+		[HttpPost]
+		public async Task<IActionResult> Edit(AddDishViewModel model, int id)
+		{
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+			}
+
+			try
+			{
+				await dishService.EditDishById(model, id);
+
+				return RedirectToAction(nameof(All));
+			}
+			catch (Exception ex)
+			{
+				throw new ArgumentException(ex.Message);
+			}
+
+
+
+		}
+	}
 }
 
 

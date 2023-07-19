@@ -10,5 +10,8 @@ namespace Restaurant.Services.Data.Interfaces
         Task<IEnumerable<AllDishesViewModel>> AllDishesAsync();
         Task<Dish?> GetDishById(int id);
         Task DeleteDishByIdAsync(int id);
-    }
+
+        Task <AddDishViewModel?> GetDishForEditByIdAsync(int id);
+		Task EditDishById(AddDishViewModel modelForEdit, int id);
+	}
 }

@@ -27,6 +27,6 @@ namespace Restaurant.ViewModels.Models.Dish
         public decimal Price { get; set; }
 
         public int DishTypeId { get; set; }
-        public IEnumerable<DishType> DishTypes { get; set; } = new HashSet<DishType>();
+        public IEnumerable<DishType> DishTypes { get; set; } = new List<DishType>();
     }
 }

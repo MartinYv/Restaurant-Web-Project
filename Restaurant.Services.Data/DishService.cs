@@ -13,13 +13,11 @@ namespace Restaurant.Services.Data
 		private readonly RestaurantDbContext context;
 		private readonly IMenuService menuService;
 
-
 		public DishService(RestaurantDbContext _context, IMenuService menuService)
 		{
 			context = _context;
 			this.menuService = menuService;
 		}
-
 
 
 		public async Task Add(AddDishViewModel model)
@@ -36,11 +34,11 @@ namespace Restaurant.Services.Data
 				Price = model.Price,
 				IsDeleted = false
 			};
-	
 
-			await menuService.AddDishAsync(dish);		
-			await context.Dishes.AddAsync(dish);		
-			
+
+			await menuService.AddDishAsync(dish);
+			await context.Dishes.AddAsync(dish);
+
 			await context.SaveChangesAsync();
 		}
 
@@ -61,12 +59,12 @@ namespace Restaurant.Services.Data
 
 		public async Task<IEnumerable<DishType>> AllDishTypesAsync()
 		{
-			return await context.DishTypes.Where(dt=>dt.IsDeleted == false).ToListAsync();
+			return await context.DishTypes.Where(dt => dt.IsDeleted == false).ToListAsync();
 		}
 
 		public async Task DeleteDishByIdAsync(int id)
 		{
-			Dish dish = await context.Dishes.Where(d => d.IsDeleted == false && d.Id == id).FirstOrDefaultAsync();
+			Dish? dish = await context.Dishes.Where(d => d.IsDeleted == false && d.Id == id).FirstOrDefaultAsync();
 
 			if (dish != null)
 			{
@@ -82,7 +80,49 @@ namespace Restaurant.Services.Data
 
 		public async Task<Dish?> GetDishById(int Id)
 		{
-			return await context.Dishes.FindAsync(Id);
+			return await context.Dishes.FirstOrDefaultAsync(d => d.IsDeleted == false && d.Id == Id);
+		}
+
+		public async Task<AddDishViewModel?> GetDishForEditByIdAsync(int id)
+		{
+
+
+			Dish? dish = await GetDishById(id);
+
+			if (dish == null)
+			{
+				throw new ArgumentException("Invalid dish id.");
+			}
+
+			AddDishViewModel model = new AddDishViewModel()
+			{
+				Name = dish.Name,
+				Description = dish.Description,
+				ImageUrl = dish.ImageUrl,
+				Price = dish.Price,
+				DishTypeId = dish.Id,
+				DishTypes = await AllDishTypesAsync()
+			};
+
+			return model;
+		}
+
+		public async Task EditDishById(AddDishViewModel modelForEdit, int id)
+		{
+			Dish? dish = await GetDishById(id);
+
+			if (dish == null)
+			{
+				throw new ArgumentException("Cannot find dish with that id.");
+			}
+
+			dish.Description = modelForEdit.Description;
+			dish.Name = modelForEdit.Name;
+			dish.ImageUrl = modelForEdit.ImageUrl;
+			dish.Price = modelForEdit.Price;
+			dish.DishTypeId = modelForEdit.DishTypeId;
+
+			await context.SaveChangesAsync();
 		}
 	}
 }

@@ -58,7 +58,9 @@ namespace Restaurant.Web.Controllers
         {
             await menuService.DeleteMenuAsync(menuId);
             return RedirectToAction(nameof(All));
-
         }
+
+
+       
     }
 }

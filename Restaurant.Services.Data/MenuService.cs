@@ -18,7 +18,7 @@ namespace Restaurant.Services.Data
 		}
 		public async Task AddMenuAcync(AddMenuViewModel model)
 		{
-			bool isMenuExist = context.Menus.Where(m => m.IsDeleted == false).Any(mt => mt.MenuType.Id == model.Id);
+			bool isMenuExist = context.Menus.Where(m => m.IsDeleted == false).Any(mt => mt.DishType.Id == model.Id);
 
 			if (isMenuExist == true)
 			{
@@ -27,7 +27,7 @@ namespace Restaurant.Services.Data
 
 			Menu menu = new Menu()
 			{
-				MenuTypeId = model.Id
+				DishTypeId	 = model.Id
 
 			};
 
@@ -41,7 +41,7 @@ namespace Restaurant.Services.Data
 				  new AllMenusViewModel()
 				  {
 					  Id = m.Id,
-					  MenuType = m.MenuType.Name
+					  MenuType = m.DishType.Name
 				  }).ToListAsync();
 		}
 
@@ -63,12 +63,12 @@ namespace Restaurant.Services.Data
 
 		public async Task<Menu?> GetMenuByName(string menuName)
 		{
-			return await context.Menus.Where(m => m.MenuType.Name == menuName && m.IsDeleted == false).Include(x => x.MenuType).Include(x => x.Dishes).FirstOrDefaultAsync();
+			return await context.Menus.Where(m => m.DishType.Name == menuName && m.IsDeleted == false).Include(x => x.DishType).Include(x => x.Dishes).FirstOrDefaultAsync();
 		}
 
 		public async Task AddDishAsync(Dish dish)
 		{
-			Menu menu = await GetMenuByName(dish.DishType.Name);
+			Menu? menu = await GetMenuByName(dish.DishType.Name);
 
 			if (menu == null)
 			{
@@ -81,6 +81,9 @@ namespace Restaurant.Services.Data
 			}
 
 			menu.Dishes.Add(dish);
+			
 		}
+
+		
 	}
 }
