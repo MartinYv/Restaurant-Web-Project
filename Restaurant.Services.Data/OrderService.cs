@@ -24,12 +24,17 @@ namespace Restaurant.Services.Data
         
         public async Task<IEnumerable<OrderViewModel>> AllOrdersAcync()
         {
-            var model = await context.Orders.Select(o => new OrderViewModel()
+            var model = await context.Orders.Where(o=>o.IsDeleted == false).Include(o => o.OrderDetail).ThenInclude(o=>o.Dish).Select(o => new OrderViewModel()
             {
+                FirstName = o.FirstName,
+                LastName = o.LastName,
+                Address = o.Address,                                          // TO FIX THE INCULDES, DISH IS ALWAYS NULL!!!!!!
+                Phone = o.Phone,
+                Price = o.Price.ToString(),
                 CustomerId = o.CustomerId,
-               
-                
-                IsCompleted = o.IsCompleted ? "False" : "True",
+                CreateDate = o.CreateDate.ToString("MM/dd/yy H:mm:ss"),
+                IsCompleted = o.IsCompleted ? "Delivered" : "Pending",
+                OrderDetail = o.OrderDetail
             }).ToListAsync();
 
             return model;

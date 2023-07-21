@@ -16,7 +16,11 @@ namespace Restaurant.ViewModels.Order
         // public Guid? CustomerId { get; set; }
         // public ApplicationUser? Customer { get; set; } = null!;
         //
-        public string Name { get; set; } = null!;
+        [Required]
+        public string FirstName { get; set; } = null!;
+
+        [Required]
+        public string LastName { get; set; } = null!;
 
         [Required]
         [StringLength(PhoneMaxLength, MinimumLength = PhoneMinLength)]

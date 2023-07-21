@@ -31,7 +31,7 @@ namespace Restaurant.Services.Data
         {
             string userId = GetUserId();
 
-            using var transaction = context.Database.BeginTransaction();
+            using var transaction = await context.Database.BeginTransactionAsync();
             try
             {
                 if (string.IsNullOrEmpty(userId))
@@ -46,29 +46,30 @@ namespace Restaurant.Services.Data
 
                     context.ShoppingCarts.Add(cart);
                 }
-                context.SaveChanges();
+                await context.SaveChangesAsync();
 
 
-                var cartItem = context.CartDetails
-                                  .FirstOrDefault(a => a.ShoppingCartId == cart.Id && a.DishId == dishId);
+                var cartItem = await context.CartDetails
+                                  .FirstOrDefaultAsync(a => a.ShoppingCartId == cart.Id && a.DishId == dishId);
                 if (cartItem is not null)
                 {
                     cartItem.Quantity += qty;
                 }
                 else
                 {
-                    var dish = context.Dishes.Find(dishId);
+                    var dish = await context.Dishes.FindAsync(dishId);
                     cartItem = new CartDetail
                     {
+                        Dish = dish,
                         DishId = dishId,
                         ShoppingCartId = cart.Id,
                         Quantity = qty,
                         UnitPrice = (int)dish.Price   // TO DO UPDATE FROM INT TO DECIMAL-> UNITPRICE
                     };
-                    context.CartDetails.Add(cartItem);
+                   await context.CartDetails.AddAsync(cartItem);
                 }
 
-                context.SaveChanges();
+              await context.SaveChangesAsync();
                 transaction.Commit();
             }
             catch (Exception ex)
@@ -166,7 +167,7 @@ namespace Restaurant.Services.Data
 
 
 
-            using var transaction = context.Database.BeginTransaction();
+            using var transaction =await context.Database.BeginTransactionAsync();
             try
             {
                 
@@ -185,15 +186,16 @@ namespace Restaurant.Services.Data
                     throw new Exception("Invalid cart");
                 }
 
-                var cartDetail = context.CartDetails
-                                    .Where(a => a.ShoppingCartId == cart.Id).ToList();
+                var cartDetail = await context.CartDetails
+                                    .Where(a => a.ShoppingCartId == cart.Id).Include(a=>a.Dish).ToListAsync();
 
                 if (cartDetail.Count == 0)
                     throw new Exception("Cart is empty");
 
                 var order = new Order
                 {
-                    Name = usersInfo.Name,
+                    FirstName = usersInfo.FirstName,
+                    LastName = usersInfo.LastName,
                     Address = usersInfo.Address,
                     Phone = usersInfo.Phone,
                     CustomerId = Guid.Parse(userId),
@@ -203,32 +205,34 @@ namespace Restaurant.Services.Data
                     //OrderStatusId = 1//pending
                 };
 
-                context.Orders.Add(order);
-                context.SaveChanges();
+               await context.Orders.AddAsync(order);
+                await context.SaveChangesAsync();
 
                 foreach (var item in cartDetail)
                 {
-                    var orderDetail = new OrderDetail
+
+					var orderDetail = new OrderDetail
                     {
+                        Dish = item.Dish,
                         DishId = item.DishId,
                         OrderId = order.Id,
                         Quantity = item.Quantity,
                         UnitPrice = item.UnitPrice
                     };
 
-                    context.OrderDetails.Add(orderDetail);
+                    await context.OrderDetails.AddAsync(orderDetail);
                 }
 
                 order.Price = (decimal)order.OrderDetail.Sum(x => x.Quantity * x.UnitPrice);
-                context.SaveChanges();
+               await context.SaveChangesAsync();
 
              
                 context.CartDetails.RemoveRange(cartDetail);
 
-                var user = context.Users.Find(Guid.Parse(userId));
+                var user = await context.Users.FindAsync(Guid.Parse(userId));
                 user.OrdersPlaced.Add(order);
 
-                context.SaveChanges();
+               await context.SaveChangesAsync();
                 transaction.Commit();
                 return true;
             }
@@ -239,9 +243,9 @@ namespace Restaurant.Services.Data
             }
         }
 
-        private string GetUserId()
+        private string? GetUserId()
         {
-            string userId = httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            string? userId = httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             return userId;
         }

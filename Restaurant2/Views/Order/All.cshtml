@@ -1,0 +1,52 @@
+﻿@using Restaurant.ViewModels.Order;
+
+@model IEnumerable<OrderViewModel>
+@{
+	ViewBag.Title = "All Orders";
+}
+
+<h2 class="text-center">@ViewBag.Title</h2>
+<hr />
+
+<div class="text-center row">
+	@foreach (var order in Model)
+	{
+		@*<div class="card col-4" style="width: 20rem; ">
+	<img class="card-img-top" style="width: 18rem;"
+	src="@dish.ImageUrl" alt="Book Image">
+	<div class="card-body">*@
+		<div>
+			<p class="mb-0">Names: @order.FirstName @order.LastName</p>
+			<p class="mb-0">Address: @order.Address</p>
+			<p class="mb-0">Phone: @order.Phone</p>
+			<p class="mb-0">Status: @order.IsCompleted</p>
+			<p class="mb-0">Time placed: @order.CreateDate</p>
+			<p class="mb-0">Total price: @order.Price</p>
+		</div>
+		<div>
+			@foreach (var item in order.OrderDetail)
+			{
+
+				<td>@item.Dish.Name</td>
+				<td>
+					@if (string.IsNullOrEmpty(item.Dish.ImageUrl))
+					{
+						<img src="/images/NoImage.png" style="width:80px;height:100px" />
+					}
+					else
+					{
+						<img src="@item.Dish.ImageUrl" style="width:80px;height:100px" />
+					}
+				</td>
+				<td>@item.Dish.Price X @item.Quantity</td>
+
+				<td>@(item.Dish.Price * item.Quantity)</td>
+
+			}
+		</div>
+	}
+</div>
+
+
+
+

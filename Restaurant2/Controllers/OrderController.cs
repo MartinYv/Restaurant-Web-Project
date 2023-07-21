@@ -17,9 +17,9 @@ namespace Restaurant.Web.Controllers
         }
 
 
-        public IActionResult All()
+        public async Task<IActionResult> All()
         {
-            var model = orderService.AllOrdersAcync();
+            var model = await orderService.AllOrdersAcync();
             return View(model);
         }
 

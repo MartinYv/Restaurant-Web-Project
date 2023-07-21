@@ -12,7 +12,10 @@ namespace Restaurant.Data.Models
         public int Id { get; set; }
 
         [Required]
-        public string Name { get; set; } = null!;
+        public string FirstName { get; set; } = null!;
+
+        [Required]
+        public string LastName { get; set; } = null!;
 
         [Required]
         [MaxLength(PhoneMaxLength)]
@@ -26,7 +29,6 @@ namespace Restaurant.Data.Models
         [Precision(18, 2)]
         public decimal Price { get; set; }
                  
-        public DateTime OrderPlaced { get; set; }
 
         [Required]
         public DateTime  CreateDate { get; set; }
