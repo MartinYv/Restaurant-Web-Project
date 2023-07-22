@@ -16,6 +16,7 @@
     <ProjectReference Include="..\Restaurant.Common\Restaurant.Common.csproj" />
     <ProjectReference Include="..\Restaurant.Data.Models\Restaurant.Data.Models.csproj" />
     <ProjectReference Include="..\Restaurant.Data\Restaurant.Data.csproj" />
+    <ProjectReference Include="..\Restaurant.Services.Data.Models\Restaurant.Services.Data.Models.csproj" />
     <ProjectReference Include="..\Restaurant.ViewModels\Restaurant.ViewModels.csproj" />
   </ItemGroup>
 

@@ -1,5 +1,5 @@
 ﻿using Restaurant.Data.Models;
-using Restaurant.ViewModels.Order;
+using Restaurant.ViewModels.Models.Order;
 using System;
 using System.Collections.Generic;
 using System.Linq;

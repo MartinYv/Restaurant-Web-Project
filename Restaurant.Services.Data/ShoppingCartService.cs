@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Restaurant.Data.Models;
 using Restaurant.Services.Data.Interfaces;
-using Restaurant.ViewModels.Order;
+using Restaurant.ViewModels.Models.Order;
 using Restaurant2.Data;
 using System;
 using System.Collections.Generic;
@@ -29,7 +29,7 @@ namespace Restaurant.Services.Data
         }
         public async Task<int> AddItem(int dishId, int qty)
         {
-            string userId = GetUserId();
+            string? userId = GetUserId();
 
             using var transaction = await context.Database.BeginTransactionAsync();
             try
@@ -83,7 +83,7 @@ namespace Restaurant.Services.Data
         public async Task<int> RemoveItem(int dishId)
         {
             //using var transaction = _db.Database.BeginTransaction();   ???
-            string userId = GetUserId();
+            string? userId = GetUserId();
             try
             {
                 if (string.IsNullOrEmpty(userId))
@@ -119,7 +119,7 @@ namespace Restaurant.Services.Data
             }
             catch (Exception ex)
             {
-
+                throw new ArgumentException(ex.Message);
             }
             var cartItemCount = await GetCartItemCount(userId);
             return cartItemCount;
@@ -127,7 +127,7 @@ namespace Restaurant.Services.Data
 
         public async Task<ShoppingCart> GetUserCart()
         {
-            var userId = Guid.Parse(GetUserId());
+            Guid? userId = Guid.Parse(GetUserId());
 
             if (userId == null)
             {

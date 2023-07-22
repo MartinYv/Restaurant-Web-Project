@@ -1,0 +1,35 @@
+﻿using System.ComponentModel.DataAnnotations;
+using Restaurant.ViewModels.Order.Enum;
+
+namespace Restaurant.ViewModels.Models.Order
+{
+    //using static Common.GeneralApplicationConstants;
+
+    public class AllOrdersQueryViewModel
+	{
+		public AllOrdersQueryViewModel()
+		{
+			CurrentPage = 1;
+			OrdersPerPage = 3;
+		}
+
+		///public string? Category { get; set; }
+
+		//[Display(Name = "Search by word")]
+		//public string? SearchString { get; set; }
+
+		[Display(Name = "Sort Orders By")]
+		public OrderSorting OrderSorting { get; set; }
+
+		public int CurrentPage { get; set; }
+
+		[Display(Name = "Show Orders On Page")]
+		public int OrdersPerPage { get; set; }
+
+		public int TotalOrders { get; set; }
+
+		public IEnumerable<string> Categories { get; set; }=new HashSet<string>();
+
+		public IEnumerable<OrderViewModel> Orders { get; set; } = new HashSet<OrderViewModel>();
+	}
+}

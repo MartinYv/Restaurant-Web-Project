@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Restaurant.Services.Data.Interfaces;
-using Restaurant.ViewModels.Order;
+using Restaurant.ViewModels.Models.Order;
 
 namespace Restaurant.Web.Controllers
 {

@@ -1,12 +1,16 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Restaurant.Data.Models;
 using Restaurant.Services.Data.Interfaces;
-using Restaurant.ViewModels.Order;
+using Restaurant.Services.Data.Models.Order;
+using Restaurant.ViewModels.Models.Order;
+using Restaurant.ViewModels.Order.Enum;
 using Restaurant2.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web.Mvc;
@@ -14,30 +18,139 @@ using System.Web.Mvc;
 namespace Restaurant.Services.Data
 {
     public class OrderService : IOrderService
-    {
-        private readonly RestaurantDbContext context;
+	{
+		private readonly RestaurantDbContext context;
+		private readonly IHttpContextAccessor httpContextAccessor;
 
-        public OrderService(RestaurantDbContext _context)
-        {
-            context = _context;
-        }
-        
-        public async Task<IEnumerable<OrderViewModel>> AllOrdersAcync()
-        {
-            var model = await context.Orders.Where(o=>o.IsDeleted == false).Include(o => o.OrderDetail).ThenInclude(o=>o.Dish).Select(o => new OrderViewModel()
-            {
-                FirstName = o.FirstName,
-                LastName = o.LastName,
-                Address = o.Address,                                          // TO FIX THE INCULDES, DISH IS ALWAYS NULL!!!!!!
-                Phone = o.Phone,
-                Price = o.Price.ToString(),
-                CustomerId = o.CustomerId,
-                CreateDate = o.CreateDate.ToString("MM/dd/yy H:mm:ss"),
-                IsCompleted = o.IsCompleted ? "Delivered" : "Pending",
-                OrderDetail = o.OrderDetail
-            }).ToListAsync();
+		public OrderService(RestaurantDbContext _context, IHttpContextAccessor _httpContextAccessor)
+		{
+			context = _context;
+			httpContextAccessor = _httpContextAccessor;
+		}
 
-            return model;
-        }
-    }
+
+
+		public async Task<IEnumerable<OrderViewModel>> AllOrdersAcync()
+		{
+			var model = await context.Orders.Where(o => o.IsDeleted == false).Include(o => o.OrderDetail).ThenInclude(o => o.Dish).Select(o => new OrderViewModel()
+			{
+				FirstName = o.FirstName,
+				LastName = o.LastName,
+				Address = o.Address,                                          // TO FIX THE INCULDES, DISH IS ALWAYS NULL!!!!!!
+				Phone = o.Phone,
+				Price = o.Price.ToString(),
+				CustomerId = o.CustomerId,
+				CreateDate = o.CreateDate.ToString("MM/dd/yy H:mm:ss"),
+				IsCompleted = o.IsCompleted ? "Delivered" : "Pending",
+				OrderDetail = o.OrderDetail
+			}).ToListAsync();
+
+			return model;
+		}
+
+		public string? GetUserId()
+		{
+			string? userId = httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
+			return userId;
+		}
+
+		public async Task<IEnumerable<OrderViewModel>> UsersOrdersAsync()
+		{
+			string? userId = GetUserId();
+			if (userId == null)
+			{
+				throw new ArgumentException("Invalid user id.");
+			}
+
+			ApplicationUser? user = await context.Users.Include(u => u.OrdersPlaced).FirstOrDefaultAsync(x => x.Id == Guid.Parse(userId));
+			if (user == null)
+			{
+				throw new ArgumentException("Invalid user.");
+			}
+
+			var usersOrders = user.OrdersPlaced.Where(o => o.IsDeleted == false).Select(o => new OrderViewModel()
+			{
+				FirstName = o.FirstName,
+				LastName = o.LastName,
+				Address = o.Address,
+				Phone = o.Phone,
+				Price = o.Price.ToString(),
+				CustomerId = o.CustomerId,
+				CreateDate = o.CreateDate.ToString("MM/dd/yy H:mm:ss"),
+				IsCompleted = o.IsCompleted ? "Delivered" : "Pending",
+				OrderDetail = o.OrderDetail
+			}).ToList();
+
+			return usersOrders;
+		}
+
+		public async Task<AllOrdersFilteredServiceModel> AllFilteredAsync(AllOrdersQueryViewModel queryModel)
+		{
+			var ordersQuery = context.Orders.Include(o=>o.OrderDetail).ThenInclude(o=>o.Dish).AsQueryable();
+
+			//if (!string.IsNullOrWhiteSpace(queryModel.SearchString))
+			//{
+			//	string wildCard = $"%{queryModel.SearchString.ToLower()}%";
+
+   //             ordersQuery = ordersQuery
+   //                 .Where(o => EF.Functions.Like(o.FirstName, wildCard) ||
+			//					 EF.Functions.Like(o.LastName, wildCard) ||
+			//					EF.Functions.Like(o.Address, wildCard) ||
+			//					EF.Functions.Like(o.Phone, wildCard));
+
+			//}
+
+            ordersQuery = queryModel.OrderSorting switch
+			{
+				OrderSorting.Newest => ordersQuery
+                    .OrderByDescending(h => h.CreateDate),
+				OrderSorting.Oldest => ordersQuery
+					.OrderBy(h => h.CreateDate),
+				OrderSorting.PriceAscending => ordersQuery
+					.OrderBy(h => h.Price),
+				OrderSorting.PriceDescending => ordersQuery
+					.OrderByDescending(h => h.Price),
+					OrderSorting.Pending => ordersQuery
+					.Where(o=>o.IsCompleted == false),
+					OrderSorting.Delivered => ordersQuery
+					.Where(o=>o.IsCompleted == true),
+				_ => ordersQuery
+                    .OrderByDescending(h => h.CreateDate)
+			};
+
+
+
+			IEnumerable<OrderViewModel> allOrders = await ordersQuery
+		   .Where(o => o.IsDeleted == false)
+		   .Skip((queryModel.CurrentPage - 1) * queryModel.OrdersPerPage)
+		   .Take(queryModel.OrdersPerPage)
+		   .Select(o => new OrderViewModel
+		   {
+			   //Id = h.Id.ToString(),
+			   FirstName = o.FirstName,
+			   LastName = o.LastName,
+			   Address = o.Address,
+               CreateDate = o.CreateDate.ToString("MM/dd/yy H:mm:ss"),
+               IsCompleted = o.IsCompleted ? "Delivered" : "Pending",
+               Price = o.Price.ToString(),
+			   Phone = o.Phone,
+			   OrderDetail = o.OrderDetail
+		   })
+		   .ToListAsync();
+			int totalOrders = ordersQuery.Count();
+
+			return new AllOrdersFilteredServiceModel()
+			{
+				TotalOrdersCount = totalOrders,
+				Orders = allOrders
+            };
+		}
+
+		public Task<IEnumerable<string>> AllCategoryNamesAsync()
+		{
+			throw new NotImplementedException();
+		}
+	}
 }
+
+

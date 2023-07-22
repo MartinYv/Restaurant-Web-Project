@@ -1,4 +1,7 @@
-﻿using Restaurant.ViewModels.Order;
+﻿using Restaurant.Data.Models;
+using Restaurant.Services.Data.Models.Order;
+using Restaurant.ViewModels.Models.Order;
+using Restaurant.ViewModels.Order;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,5 +13,11 @@ namespace Restaurant.Services.Data.Interfaces
     public interface IOrderService
     {
         Task<IEnumerable<OrderViewModel>> AllOrdersAcync();
+        Task <IEnumerable<OrderViewModel>> UsersOrdersAsync();
+        string? GetUserId();
+
+        Task<AllOrdersFilteredServiceModel> AllFilteredAsync(AllOrdersQueryViewModel queryModel);
+
+        Task<IEnumerable<string>> AllCategoryNamesAsync();
     }
 }

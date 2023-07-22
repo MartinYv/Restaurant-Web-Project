@@ -1,52 +1,137 @@
-﻿@using Restaurant.ViewModels.Order;
+﻿@using Restaurant.ViewModels.Models.Order;
+@addTagHelper *,Microsoft.AspNetCore.Mvc.TagHelpers
 
 @model IEnumerable<OrderViewModel>
 @{
-	ViewBag.Title = "All Orders";
+    ViewBag.Title = "All Orders";
 }
 
 <h2 class="text-center">@ViewBag.Title</h2>
 <hr />
 
-<div class="text-center row">
-	@foreach (var order in Model)
-	{
-		@*<div class="card col-4" style="width: 20rem; ">
-	<img class="card-img-top" style="width: 18rem;"
-	src="@dish.ImageUrl" alt="Book Image">
-	<div class="card-body">*@
-		<div>
-			<p class="mb-0">Names: @order.FirstName @order.LastName</p>
-			<p class="mb-0">Address: @order.Address</p>
-			<p class="mb-0">Phone: @order.Phone</p>
-			<p class="mb-0">Status: @order.IsCompleted</p>
-			<p class="mb-0">Time placed: @order.CreateDate</p>
-			<p class="mb-0">Total price: @order.Price</p>
-		</div>
-		<div>
-			@foreach (var item in order.OrderDetail)
-			{
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Orders</title>
 
-				<td>@item.Dish.Name</td>
-				<td>
-					@if (string.IsNullOrEmpty(item.Dish.ImageUrl))
-					{
-						<img src="/images/NoImage.png" style="width:80px;height:100px" />
-					}
-					else
-					{
-						<img src="@item.Dish.ImageUrl" style="width:80px;height:100px" />
-					}
-				</td>
-				<td>@item.Dish.Price X @item.Quantity</td>
+    <!-- Add Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css">
 
-				<td>@(item.Dish.Price * item.Quantity)</td>
+    <style>
+        /* Add your custom CSS styles here, if needed */
+    </style>
+</head>
 
-			}
-		</div>
-	}
-</div>
+
+
+<body>
+    <div class="text-center row">
+        <label for="sortingDropdown">Sort By:</label>
+        <select id="sortingDropdown">
+            <option value="newest">Newest</option>
+            <option value="oldest">Oldest</option>
+            <option value="priceAsc">Price Ascending</option>
+            <option value="priceDesc">Price Descending</option>
+        </select>
+
+        <!-- Rest of your table code goes here -->
+
+    </div>
 
 
 
 
+    <div class="text-center row">
+        <table class="table table-bordered table-hover">
+            <thead>
+                <tr>
+                    <th>Names</th>
+                    <th>Address</th>
+                    <th>Phone</th>
+                    <th>Status</th>
+                    <th>Time placed</th>
+                    <th>Total price</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var order in Model)
+                {
+                    <tr>
+                        <td>@order.FirstName @order.LastName</td>
+                        <td>@order.Address</td>
+                        <td>@order.Phone</td>
+                        <td>@order.IsCompleted</td>
+                        <td>@order.CreateDate</td>
+                        <td>@order.Price</td>
+                    </tr>
+                    <tr>
+                        <td colspan="6">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>Dish Name</th>
+                                        <th>Image</th>
+                                        <th>Price (per item)</th>
+                                        <th>Quantity</th>
+                                        <th>Subtotal</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in order.OrderDetail)
+                                    {
+                                        <tr>
+                                            <td>@item.Dish.Name</td>
+                                            <td>
+                                                @if (string.IsNullOrEmpty(item.Dish.ImageUrl))
+                                                {
+                                                    <img src="/images/NoImage.png" style="width:80px;height:100px" />
+                                                }
+                                                else
+                                                {
+                                                    <img src="@item.Dish.ImageUrl" style="width:80px;height:100px" />
+                                                }
+                                            </td>
+                                            <td>@item.Dish.Price</td>
+                                            <td>@item.Quantity</td>
+                                            <td>@(item.Dish.Price * item.Quantity)</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            document.getElementById("sortingDropdown").addEventListener("change", function () {
+                var sortBy = this.value;
+                sortTable(sortBy);
+            });
+
+            function sortTable(sortBy) {
+                var table = document.getElementById("orders-table").getElementsByTagName('tbody')[0];
+                var rows = table.getElementsByTagName('tr');
+                var sortedRows = Array.from(rows).sort(function (a, b) {
+                    var aValue = a.querySelector("[data-sort='" + sortBy + "']").getAttribute("data-sort");
+                    var bValue = b.querySelector("[data-sort='" + sortBy + "']").getAttribute("data-sort");
+
+                    if (sortBy === "time" || sortBy === "price") {
+                        return sortBy === "time" ? (new Date(bValue) - new Date(aValue)) : (parseFloat(bValue) - parseFloat(aValue));
+                    } else {
+                        return aValue.localeCompare(bValue);
+                    }
+                });
+
+                for (var i = 0; i < sortedRows.length; i++) {
+                    table.appendChild(sortedRows[i]);
+                }
+            }
+        });
+    </script>
+
+</body>
+}

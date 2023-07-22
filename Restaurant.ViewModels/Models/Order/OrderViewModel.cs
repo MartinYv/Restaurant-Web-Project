@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Restaurant.ViewModels.Order
+namespace Restaurant.ViewModels.Models.Order
 {
     public class OrderViewModel
     {
@@ -18,7 +18,10 @@ namespace Restaurant.ViewModels.Order
         public string Address { get; set; } = null!;
         public string Price { get; set; } = null!;
         public string CreateDate { get; set; } = null!;
-		public string IsCompleted { get; set; } = null!;
-		public List<OrderDetail> OrderDetail { get; set; } = new List<OrderDetail>();
-	}
+        public string IsCompleted { get; set; } = null!;
+        public List<OrderDetail> OrderDetail { get; set; } = new List<OrderDetail>();
+
+
+
+    }
 }
