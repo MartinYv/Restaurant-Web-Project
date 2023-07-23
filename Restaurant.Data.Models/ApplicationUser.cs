@@ -9,6 +9,6 @@ namespace Restaurant.Data.Models
             Id = Guid.NewGuid();
         }
 
-       public HashSet<Order> OrdersPlaced { get; set; } = new HashSet<Order>();
+       public List<Order> OrdersPlaced { get; set; } = new List<Order>();
     }
 }

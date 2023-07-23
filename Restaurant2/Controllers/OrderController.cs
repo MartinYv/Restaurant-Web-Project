@@ -44,14 +44,20 @@ namespace Restaurant.Web.Controllers
 			return RedirectToAction("CheckOut", "Cart", usersInfo);
 		}
 
-
-		public async Task<IActionResult> MyOrders()
+		[HttpGet]
+		public async Task<IActionResult> MyOrders([FromQuery] AllOrdersQueryViewModel queryModel)
 		{
 			try
 			{
-				var model =await orderService.UsersOrdersAsync();
-				return View("Mine", model);
-			}
+                AllOrdersFilteredServiceModel serviceModel =
+                await orderService.UsersOrdersAsync(queryModel);
+
+                queryModel.Orders = serviceModel.Orders;
+                queryModel.TotalOrders = serviceModel.TotalOrdersCount;
+
+
+                return View("Mine", queryModel);
+            }
 			catch (Exception)
 			{
 

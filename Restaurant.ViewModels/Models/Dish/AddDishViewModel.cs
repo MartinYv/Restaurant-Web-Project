@@ -13,7 +13,7 @@ namespace Restaurant.ViewModels.Models.Dish
         public string Name { get; set; } = null!;
 
         [Required]
-        [StringLength(DishDescriptionMaxLength, MinimumLength = DishDescriptionMinLength)]
+        [StringLength(DishDescriptionMaxLength, MinimumLength = 1)]
         public string Description { get; set; } = null!;
 
         [Required]

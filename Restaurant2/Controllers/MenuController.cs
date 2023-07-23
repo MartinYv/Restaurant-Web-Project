@@ -1,6 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Restaurant.Services.Data;
 using Restaurant.Services.Data.Interfaces;
+using Restaurant.Services.Data.Models.Menu;
+using Restaurant.Services.Data.Models.Order;
 using Restaurant.ViewModels.Models.Menu;
 
 
@@ -60,7 +63,27 @@ namespace Restaurant.Web.Controllers
             return RedirectToAction(nameof(All));
         }
 
+        public async Task<IActionResult> AllMenuDishes([FromQuery] AllMenuDishesQueryViewModel queryModel, int menuId)
+        {
+            try
+            {
+                queryModel.MenuId = menuId;
+                AllMenuDishesFilteredServiceModel serviceModel =
+                await menuService.MenuAllDishesAsync(queryModel);
 
-       
+                queryModel.Dishes = serviceModel.Dishes;
+                queryModel.TotalDishes = serviceModel.TotalDishesCount;
+
+
+                return View("AllMenuDishesSorted", queryModel);
+            }
+            catch (Exception)
+            {
+
+                return RedirectToAction("Index", "Home");
+            }
+
+        }
+
     }
 }

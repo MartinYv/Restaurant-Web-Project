@@ -8,6 +8,9 @@ namespace Restaurant.Data.Models
         [Key]
         public int Id { get; set; }
 
+        [Required]// to do constants
+        public string ImageUrl { get; set; } = null!;
+
         [ForeignKey("DishType")]
         public int DishTypeId { get; set; }
         public DishType DishType { get; set; } = null!;

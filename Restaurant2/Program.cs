@@ -30,7 +30,6 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddScoped<IDishTypeService, DishTypeService>();
 builder.Services.AddScoped<IDishService, DishService>();
 
-builder.Services.AddScoped<IMenuTypeService, MenuTypeService>();
 builder.Services.AddScoped<IMenuService, MenuService>();
 
 builder.Services.AddScoped<IOrderService, OrderService>();

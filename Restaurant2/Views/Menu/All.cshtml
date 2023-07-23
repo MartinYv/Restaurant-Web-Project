@@ -2,22 +2,31 @@
 
 @model IEnumerable<AllMenusViewModel>
 @{
-	ViewBag.Title = "All Menus";
+    ViewBag.Title = "All Menus";
 }
 
 <h2 class="text-center">@ViewBag.Title</h2>
 <hr />
 
-<div class="text-center row">
-	@foreach (var menu in Model)
-	{
-
-		<p class="mb-0">Type Id: @menu.Id</p>
-		<p class="mb-0">Type Name: @menu.MenuType</p>
-
-		<form asp-controller="Menu" asp-action="Delete" method="post">
-			<input type="hidden" name="menuId" value="@menu.Id" />
-			<button type="submit">Delete</button>
-		</form>
-	}
+<div class="container mt-4">
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+        @foreach (var menu in Model)
+        {
+            <div class="col">
+                <a href="@Url.Action("AllMenuDishes", "Menu", new { menuId = menu.Id })" class="card h-100 position-relative">
+                    <img src="@menu.ImageUrl" class="card-img-top" alt="Menu Image" style="width: 18rem; height: 15rem;">
+                    <div class="menu-type-overlay">
+                        <h5 class="card-title">@menu.MenuType</h5>
+                    </div>
+                    <div class="card-body">
+                        <!-- Other card content here -->
+                    </div>
+                </a>
+                    <form asp-controller="Menu" asp-action="Delete" method="post">
+                        <input type="hidden" name="menuId" value="@menu.Id" />
+                        <button type="submit">Delete</button>
+                    </form>
+            </div>
+        }
+    </div>
 </div>

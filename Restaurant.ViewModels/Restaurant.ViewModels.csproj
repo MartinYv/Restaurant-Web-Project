@@ -7,13 +7,15 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Restaurant.Common\Restaurant.Common.csproj" />
-    <ProjectReference Include="..\Restaurant.Data.Models\Restaurant.Data.Models.csproj" />
-    <ProjectReference Include="..\Restaurant.Data\Restaurant.Data.csproj" />
+    <Compile Remove="Models\Cart\**" />
+    <EmbeddedResource Remove="Models\Cart\**" />
+    <None Remove="Models\Cart\**" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Models\Cart\" />
+    <ProjectReference Include="..\Restaurant.Common\Restaurant.Common.csproj" />
+    <ProjectReference Include="..\Restaurant.Data.Models\Restaurant.Data.Models.csproj" />
+    <ProjectReference Include="..\Restaurant.Data\Restaurant.Data.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,5 +1,5 @@
 ﻿using Restaurant.Data.Models;
-
+using System.ComponentModel.DataAnnotations;
 
 namespace Restaurant.ViewModels.Models.Menu
 {
@@ -7,7 +7,9 @@ namespace Restaurant.ViewModels.Models.Menu
     public class AddMenuViewModel
     {
 		public int Id { get; set; }
-		public IEnumerable<MenuType> MenuTypes { get; set; } = new HashSet<MenuType>();
+        [Required]
+        public string ImageUrl { get; set; } = null!;
+        public IEnumerable<DishType> MenuTypes { get; set; } = new List<DishType>();
 
 	}
 }

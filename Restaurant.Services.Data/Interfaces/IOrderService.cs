@@ -13,8 +13,8 @@ namespace Restaurant.Services.Data.Interfaces
     public interface IOrderService
     {
         Task<IEnumerable<OrderViewModel>> AllOrdersAcync();
-        Task <IEnumerable<OrderViewModel>> UsersOrdersAsync();
-        string? GetUserId();
+        Task<AllOrdersFilteredServiceModel> UsersOrdersAsync(AllOrdersQueryViewModel queryModel);
+            string? GetUserId();
 
         Task<AllOrdersFilteredServiceModel> AllFilteredAsync(AllOrdersQueryViewModel queryModel);
 

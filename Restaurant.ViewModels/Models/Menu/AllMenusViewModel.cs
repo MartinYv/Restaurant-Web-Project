@@ -10,5 +10,6 @@ namespace Restaurant.ViewModels.Models.Menu
 	{
         public  int Id { get; set; }
         public string MenuType { get; set; } = null!;
-	}
+        public string ImageUrl { get; set; } = null!;
+    }
 }

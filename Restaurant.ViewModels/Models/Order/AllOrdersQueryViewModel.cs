@@ -13,11 +13,6 @@ namespace Restaurant.ViewModels.Models.Order
 			OrdersPerPage = 3;
 		}
 
-		///public string? Category { get; set; }
-
-		//[Display(Name = "Search by word")]
-		//public string? SearchString { get; set; }
-
 		[Display(Name = "Sort Orders By")]
 		public OrderSorting OrderSorting { get; set; }
 
@@ -27,8 +22,6 @@ namespace Restaurant.ViewModels.Models.Order
 		public int OrdersPerPage { get; set; }
 
 		public int TotalOrders { get; set; }
-
-		public IEnumerable<string> Categories { get; set; }=new HashSet<string>();
 
 		public IEnumerable<OrderViewModel> Orders { get; set; } = new HashSet<OrderViewModel>();
 	}
