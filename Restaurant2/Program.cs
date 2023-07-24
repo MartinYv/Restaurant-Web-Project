@@ -1,10 +1,15 @@
-
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Restaurant.Data.Models;
 using Restaurant.Services.Data;
 using Restaurant.Services.Data.Interfaces;
 using Restaurant2.Data;
 using System.Text.Json.Serialization;
+using Restaurant.Web.Infrastucture.Extentions;
+using NuGet.Packaging.Signing;
+
+
+using static Restaurant.Common.GeneralApplicationConstants;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,30 +20,32 @@ builder.Services.AddDbContext<RestaurantDbContext>(options =>
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-builder.Services.AddDefaultIdentity<ApplicationUser>(options => 
+builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
 {
     options.SignIn.RequireConfirmedAccount = false;
     options.Password.RequireDigit = false;
     options.Password.RequireNonAlphanumeric = false;
     options.Password.RequireUppercase = false;
-    })
+}).AddRoles<IdentityRole<Guid>>()
     .AddEntityFrameworkStores<RestaurantDbContext>();
 
 builder.Services.AddControllersWithViews();
 
+//Through this extended method we add all of the services throug reflection, the code bellow it(all the services) its not needed.
+builder.Services.AddApplicationServices(typeof(IOrderService));
 
-builder.Services.AddScoped<IDishTypeService, DishTypeService>();
-builder.Services.AddScoped<IDishService, DishService>();
+//builder.Services.AddScoped<IDishTypeService, DishTypeService>();
+//builder.Services.AddScoped<IDishService, DishService>();
 
-builder.Services.AddScoped<IMenuService, MenuService>();
+//builder.Services.AddScoped<IMenuService, MenuService>();
 
-builder.Services.AddScoped<IOrderService, OrderService>();
+//builder.Services.AddScoped<IOrderService, OrderService>();
 
-builder.Services.AddScoped<IShoppingCartService, ShoppingCartService>();
+//builder.Services.AddScoped<IShoppingCartService, ShoppingCartService>();
 
-builder.Services.AddScoped<ITableService, TableService>();
+//builder.Services.AddScoped<ITableService, TableService>();
 
-builder.Services.AddScoped<IReservationService, ReservationService>();
+//builder.Services.AddScoped<IReservationService, ReservationService>();
 
 builder.Services.AddSession(); // asdasd
 
@@ -76,6 +83,8 @@ app.UseSession(); // asdasd
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.SeedAdministrator(DevelopmentAdminEmail);
 
 app.MapControllerRoute(
     name: "default",
