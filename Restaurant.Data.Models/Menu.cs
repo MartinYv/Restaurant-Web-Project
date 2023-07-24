@@ -1,6 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
+using static Restaurant.Common.EntityValidationConstants.Menu;
+
 namespace Restaurant.Data.Models
 {
     public class Menu
@@ -8,7 +10,9 @@ namespace Restaurant.Data.Models
         [Key]
         public int Id { get; set; }
 
-        [Required]// to do constants
+        [Required]
+        [MaxLength(MenuUrlMaxLength)]
+        [Url]
         public string ImageUrl { get; set; } = null!;
 
         [ForeignKey("DishType")]
@@ -16,9 +20,7 @@ namespace Restaurant.Data.Models
         public DishType DishType { get; set; } = null!;
 
         public List<Dish> Dishes { get; set; } = new List<Dish>();
-       // [ForeignKey("Dish")]
-       // public int DishId { get; set; }
-       // public Dish Dish { get; set; } = null!;
+
         public bool IsDeleted { get; set; }
     }
 }

@@ -13,8 +13,5 @@ namespace Restaurant.ViewModels.Models.Order
         public string CreateDate { get; set; } = null!;
         public string IsCompleted { get; set; } = null!;
         public List<OrderDetail> OrderDetail { get; set; } = new List<OrderDetail>();
-
-
-
     }
 }

@@ -12,13 +12,16 @@ namespace Restaurant.Data.Models
         public int Id { get; set; }
 
         [Required]
+        [MaxLength(FirstNameMaxLength)]
         public string FirstName { get; set; } = null!;
 
         [Required]
+        [MaxLength(LastNameMaxLength)]
         public string LastName { get; set; } = null!;
 
         [Required]
         [MaxLength(PhoneMaxLength)]
+        [Phone]
         public string Phone { get; set; } = null!;
 
         [Required]
@@ -42,8 +45,6 @@ namespace Restaurant.Data.Models
         public Guid CustomerId { get; set; }
         public ApplicationUser Customer { get; set; } = null!;
         public bool IsDeleted { get; set; }
-
-
         public List<OrderDetail> OrderDetail { get; set; } = new List<OrderDetail>();
 
     }

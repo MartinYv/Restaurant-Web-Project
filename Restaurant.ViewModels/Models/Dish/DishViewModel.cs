@@ -1,6 +1,4 @@
-﻿
-
-namespace Restaurant.ViewModels.Models.Dish
+﻿namespace Restaurant.ViewModels.Models.Dish
 {
     public class DishViewModel
     {
