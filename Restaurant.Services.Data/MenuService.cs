@@ -60,11 +60,14 @@ namespace Restaurant.Services.Data
         {
             var menu = await context.Menus.Where(m => m.IsDeleted == false).FirstOrDefaultAsync(m => m.Id == menuId);
 
-            if (menu != null)
+            if (menu == null)
             {
-                menu.IsDeleted = true;
-                await context.SaveChangesAsync();
+                throw new ArgumentException("Invalid menu Id");
             }
+
+            menu.IsDeleted = true;
+            await context.SaveChangesAsync();
+
         }
 
         public async Task<Menu?> GetMenuByName(string menuName)
@@ -85,15 +88,15 @@ namespace Restaurant.Services.Data
             {
                 throw new ArgumentException("Dish with that name is already added");
             }
+
             menu.Dishes.Add(dish);
         }
 
         public async Task<AllMenuDishesFilteredServiceModel> MenuAllDishesAsync(AllMenuDishesQueryViewModel queryModel)
         {
-             var menu = await context.Menus.Where(m => m.Id == queryModel.MenuId && m.IsDeleted == false).Include(d=>d.Dishes).FirstOrDefaultAsync();
+            var menu = await context.Menus.Where(m => m.Id == queryModel.MenuId && m.IsDeleted == false).Include(d => d.Dishes).FirstOrDefaultAsync();
+           
             IQueryable<Dish> menuQuery = menu.Dishes.AsQueryable();
-            
-
 
             menuQuery = queryModel.OrderSorting switch
             {
@@ -105,9 +108,7 @@ namespace Restaurant.Services.Data
                 _ => menuQuery.OrderBy(d => d.Id)
             };
 
-
-
-            IEnumerable<DishViewModel> allDishes =  menuQuery
+            IEnumerable<DishViewModel> allDishes = menuQuery
            .Where(d => d.IsDeleted == false)
            .Skip((queryModel.CurrentPage - 1) * queryModel.DishesPerPage)
            .Take(queryModel.DishesPerPage)

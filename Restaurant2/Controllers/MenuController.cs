@@ -6,6 +6,7 @@ using Restaurant.Services.Data.Models.Menu;
 using Restaurant.Services.Data.Models.Order;
 using Restaurant.ViewModels.Models.Menu;
 
+using static Restaurant.Common.NotificationMessagesConstants;
 
 namespace Restaurant.Web.Controllers
 {
@@ -40,16 +41,17 @@ namespace Restaurant.Web.Controllers
 
             try
             {
-				await menuService.AddMenuAcync(model);
-				return RedirectToAction(nameof(All));
-			}
+                await menuService.AddMenuAcync(model);
+                TempData[SuccessMessage] = "Menu succecfully added.";
+                return RedirectToAction(nameof(All));
+            }
             catch (Exception ex)
             {
-                throw new ArgumentException(ex.Message);
+                TempData[ErrorMessage] = ex.Message;
+                return RedirectToAction(nameof(Add));
+            }
 
-			}
-
-		}
+        }
 
         public async Task<IActionResult> All()
         {
@@ -59,8 +61,17 @@ namespace Restaurant.Web.Controllers
 
         public async Task<IActionResult> Delete(int menuId)
         {
-            await menuService.DeleteMenuAsync(menuId);
-            return RedirectToAction(nameof(All));
+            try
+            {
+                await menuService.DeleteMenuAsync(menuId);
+                TempData[SuccessMessage] = "Menu succecfully deleted.";
+                return RedirectToAction(nameof(All));
+            }
+            catch (Exception ex)
+            {
+                TempData[ErrorMessage] = ex.Message;
+                return RedirectToAction(nameof(All));
+            }
         }
 
         public async Task<IActionResult> AllMenuDishes([FromQuery] AllMenuDishesQueryViewModel queryModel, int menuId)

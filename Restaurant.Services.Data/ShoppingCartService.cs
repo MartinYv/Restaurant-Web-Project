@@ -66,10 +66,10 @@ namespace Restaurant.Services.Data
                         Quantity = qty,
                         UnitPrice = (int)dish.Price   // TO DO UPDATE FROM INT TO DECIMAL-> UNITPRICE
                     };
-                   await context.CartDetails.AddAsync(cartItem);
+                    await context.CartDetails.AddAsync(cartItem);
                 }
 
-              await context.SaveChangesAsync();
+                await context.SaveChangesAsync();
                 transaction.Commit();
             }
             catch (Exception ex)
@@ -94,7 +94,7 @@ namespace Restaurant.Services.Data
                     throw new Exception("Invalid cart");
                 }
 
-               
+
                 var cartItem = context.CartDetails
                                   .FirstOrDefault(a => a.ShoppingCartId == cart.Id && a.DishId == dishId);
 
@@ -142,7 +142,7 @@ namespace Restaurant.Services.Data
             return shoppingCart;
 
         }
-        public async Task<ShoppingCart> GetCart(string userId)
+        public async Task<ShoppingCart?> GetCart(string userId)
         {
             var cart = await context.ShoppingCarts.FirstOrDefaultAsync(x => x.UserId == Guid.Parse(userId));
             return cart;
@@ -167,15 +167,22 @@ namespace Restaurant.Services.Data
 
 
 
-            using var transaction =await context.Database.BeginTransactionAsync();
+            using var transaction = await context.Database.BeginTransactionAsync();
             try
             {
-                
+
                 var userId = GetUserId();
 
                 if (string.IsNullOrEmpty(userId))
                 {
                     throw new Exception("User is not logged-in");
+                }
+
+                var user = await context.Users.FindAsync(Guid.Parse(userId));
+
+                if (user == null)
+                {
+                    throw new ArgumentException("Invalid user.");
                 }
 
 
@@ -187,7 +194,7 @@ namespace Restaurant.Services.Data
                 }
 
                 var cartDetail = await context.CartDetails
-                                    .Where(a => a.ShoppingCartId == cart.Id).Include(a=>a.Dish).ToListAsync();
+                                    .Where(a => a.ShoppingCartId == cart.Id).Include(a => a.Dish).ToListAsync();
 
                 if (cartDetail.Count == 0)
                     throw new Exception("Cart is empty");
@@ -205,13 +212,13 @@ namespace Restaurant.Services.Data
                     //OrderStatusId = 1//pending
                 };
 
-               await context.Orders.AddAsync(order);
+                await context.Orders.AddAsync(order);
                 await context.SaveChangesAsync();
 
                 foreach (var item in cartDetail)
                 {
 
-					var orderDetail = new OrderDetail
+                    var orderDetail = new OrderDetail
                     {
                         Dish = item.Dish,
                         DishId = item.DishId,
@@ -224,15 +231,14 @@ namespace Restaurant.Services.Data
                 }
 
                 order.Price = (decimal)order.OrderDetail.Sum(x => x.Quantity * x.UnitPrice);
-               await context.SaveChangesAsync();
+                await context.SaveChangesAsync();
 
-             
+
                 context.CartDetails.RemoveRange(cartDetail);
 
-                var user = await context.Users.FindAsync(Guid.Parse(userId));
                 user.OrdersPlaced.Add(order);
 
-               await context.SaveChangesAsync();
+                await context.SaveChangesAsync();
                 transaction.Commit();
                 return true;
             }

@@ -2,6 +2,8 @@
 using Restaurant.Services.Data.Interfaces;
 using Restaurant.ViewModels.Models.Order;
 
+using static Restaurant.Common.NotificationMessagesConstants;
+
 namespace Restaurant.Web.Controllers
 {
     public class CartController : Controller
@@ -50,9 +52,11 @@ namespace Restaurant.Web.Controllers
 
             if (!isCheckedOut)
             {
+                TempData[ErrorMessage] = "Something went wrong";
                 throw new Exception("Something happen in server side");
             }
 
+            TempData[SuccessMessage] = "Your order is successfully recieved. We will call you when our deliveryman is at your address.";
             return RedirectToAction("Index", "Home");
         }
 

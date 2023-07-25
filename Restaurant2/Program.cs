@@ -84,6 +84,7 @@ app.UseSession(); // asdasd
 app.UseAuthentication();
 app.UseAuthorization();
 
+//Seeding administrator through the method we wrote. The first admin should be seeded manualy.
 app.SeedAdministrator(DevelopmentAdminEmail);
 
 app.MapControllerRoute(

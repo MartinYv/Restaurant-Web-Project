@@ -7,6 +7,8 @@ using Restaurant.ViewModels.Models.Dish;
 using System.Reflection.Metadata.Ecma335;
 using System.Security.Claims;
 
+using static Restaurant.Common.NotificationMessagesConstants;
+
 namespace Restaurant.Web.Controllers
 {
     public class DishController : Controller
@@ -40,12 +42,13 @@ namespace Restaurant.Web.Controllers
             try
             {
                 await dishService.Add(model);
+                TempData[SuccessMessage] = "Dish successfully added.";
                 return RedirectToAction(nameof(All));
             }
             catch (Exception ex)
             {
 
-                ModelState.AddModelError("", ex.Message);
+                TempData[ErrorMessage] = ex.Message;
                 return RedirectToAction(nameof(All));// to do 
             }
 
@@ -64,12 +67,13 @@ namespace Restaurant.Web.Controllers
             try
             {
                 await dishService.DeleteDishByIdAsync(id);
+                TempData[SuccessMessage] = "Dish successfully deleted.";
                 return RedirectToAction(nameof(All));
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
-                throw new ArgumentException("Invalid dish Id");
+                TempData[ErrorMessage] = ex.Message;
+                return RedirectToAction(nameof(All));
             }    
         }
 
@@ -94,16 +98,14 @@ namespace Restaurant.Web.Controllers
 			try
 			{
 				await dishService.EditDishById(model, id);
-
+                TempData[SuccessMessage] = "Dish successfully deleted.";
 				return RedirectToAction(nameof(All));
 			}
 			catch (Exception ex)
 			{
-				throw new ArgumentException(ex.Message);
-			}
-
-
-
+                TempData[ErrorMessage] = ex.Message;
+                return RedirectToAction(nameof(All));
+            }
 		}
 	}
 }

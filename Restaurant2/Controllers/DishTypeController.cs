@@ -2,91 +2,107 @@
 using Restaurant.Data.Models;
 using Restaurant.Services.Data.Interfaces;
 using Restaurant.ViewModels.Models.Dish;
+using static Restaurant.Common.NotificationMessagesConstants;
 
 namespace Restaurant.Web.Controllers
 {
-	public class DishTypeController : Controller
-	{
-		private readonly IDishTypeService dishTypeService;
+    public class DishTypeController : Controller
+    {
+        private readonly IDishTypeService dishTypeService;
 
-		public DishTypeController(IDishTypeService _dishTypeService)
-		{
-			dishTypeService = _dishTypeService;
-		}
+        public DishTypeController(IDishTypeService _dishTypeService)
+        {
+            dishTypeService = _dishTypeService;
+        }
 
-		[HttpGet]
-		public IActionResult Add()
-		{
-			var model = new AddDishTypeViewModel();
-			return View(model);
-		}
+        [HttpGet]
+        public IActionResult Add()
+        {
+            var model = new AddDishTypeViewModel();
+            return View(model);
+        }
 
-		[HttpPost]
-		public async Task<IActionResult> Add(AddDishTypeViewModel model)
-		{
-			if (!ModelState.IsValid)
-			{
-				return View(model);
-			}
-			try
-			{
-				await dishTypeService.AddDishTypeAsync(model);
-				return RedirectToAction(nameof(All));
-			}
-			catch (Exception ex)
-			{
+        [HttpPost]
+        public async Task<IActionResult> Add(AddDishTypeViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+            try
+            {
+                await dishTypeService.AddDishTypeAsync(model);
 
-				throw new ArgumentException(ex.Message);
-			}
-			
-		}
+                TempData[SuccessMessage] = "Dish type successfully added.";
 
-		public async Task<IActionResult> All()
-		{
-			var model = await dishTypeService.AllDishTypesAsync();
+                return RedirectToAction(nameof(All));
+            }
+            catch (Exception ex)
+            {
+                TempData[ErrorMessage] = ex.Message;
+               return RedirectToAction(nameof(All));
+            }
 
-			return View(model);
-		}
+        }
 
-		public async Task<IActionResult> Delete(int typeId)
-		{
-			await dishTypeService.DeleteDishTypeAsync(typeId);
-			return RedirectToAction(nameof(All));
-		}
+        public async Task<IActionResult> All()
+        {
+            var model = await dishTypeService.AllDishTypesAsync();
 
-		[HttpGet]
-		public async Task<IActionResult> Edit(int id)
-		{
-			AddDishTypeViewModel? model = await dishTypeService.GetDishTypeForEditById(id);
+            return View(model);
+        }
 
-			if (model == null)
-			{
-				return RedirectToAction(nameof(All));
-			}
+        public async Task<IActionResult> Delete(int typeId)
+        {
+            try
+            {
+                await dishTypeService.DeleteDishTypeAsync(typeId);
+                TempData[SuccessMessage] = "Dish type successfully deleted.";
+                return RedirectToAction(nameof(All));
+            }
+            catch (Exception ex)
+            {
+                TempData[ErrorMessage] = ex.Message;
+               return RedirectToAction(nameof(All));
+            }
+            
+        }
 
-			return View(model);
-		}
+        [HttpGet]
+        public async Task<IActionResult> Edit(int id)
+        {
+            AddDishTypeViewModel? model = await dishTypeService.GetDishTypeForEditById(id);
 
-	
-		public async Task<IActionResult> Edit(AddDishTypeViewModel model, int id)
-		{
-			if (!ModelState.IsValid)
-			{
-				return View(model);
-			}
+            if (model == null)
+            {
+                TempData[ErrorMessage] = "Ivalid dish type Id";
+                return RedirectToAction(nameof(All));
+            }
 
-			try
-			{
-				await dishTypeService.EditDishTypeById(model, id);
+            return View(model);
+        }
 
-				return RedirectToAction(nameof(All));
-			}
-			catch (Exception ex)
-			{
-				throw new ArgumentException(ex.Message);
-			}
 
-		}
+        public async Task<IActionResult> Edit(AddDishTypeViewModel model, int id)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
 
-	}
+            try
+            {
+                await dishTypeService.EditDishTypeById(model, id);
+                TempData[SuccessMessage] = "Dish type successfully edited.";
+                return RedirectToAction(nameof(All));
+            }
+            catch (Exception ex)
+            {
+                TempData[ErrorMessage] = ex.Message;
+
+                return RedirectToAction(nameof(All));
+            }
+        }
+
+    }
 }

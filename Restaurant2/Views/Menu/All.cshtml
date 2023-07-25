@@ -11,7 +11,8 @@
 <div class="container mt-4">
     <div class="row row-cols-1 row-cols-md-3 g-4">
         @foreach (var menu in Model)
-        {
+        {   
+
             <div class="col">
                 <a href="@Url.Action("AllMenuDishes", "Menu", new { menuId = menu.Id })" class="card h-100 position-relative">
                     <img src="@menu.ImageUrl" class="card-img-top" alt="Menu Image" style="width: 18rem; height: 15rem;">
