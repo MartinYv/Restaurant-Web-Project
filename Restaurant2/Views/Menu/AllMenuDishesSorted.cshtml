@@ -1,4 +1,6 @@
 ﻿@using Restaurant.ViewModels.Models.Menu;
+@using Restaurant.Web.Infrastucture.Extentions;
+
 
 @model AllMenuDishesQueryViewModel
 
@@ -107,16 +109,23 @@ else
                             <p class="card-text">@dish.Description</p>
                             <p class="card-text">Price: @dish.Price lv.</p>
                         </div>
-                        <div class="card-footer d-flex justify-content-center">
-                            <form asp-controller="Dish" asp-action="Delete" asp-route-id="@dish.Id">
-                                <button type="submit" class="btn btn-danger btn-sm me-2">Delete</button>
-                            </form>
-                            <a href="/Dish/Edit/@dish.Id" class="btn btn-warning btn-sm me-2">Edit</a>
-                            <form asp-controller="Cart" asp-action="AddItem" method="post">
-                                <input type="hidden" name="dishId" value="@dish.Id" />
-                                <button type="submit" class="btn btn-primary btn-sm">Add to Cart</button>
-                            </form>
-                        </div>
+                       
+                        @if (User.IsAdmin())
+                        {
+                            <div class="card-footer d-flex justify-content-center">
+                                <form asp-controller="Dish" asp-action="Delete" asp-route-id="@dish.Id">
+                                    <button type="submit" class="btn btn-danger btn-sm me-2">Delete</button>
+                                </form>
+                                <a href="/Dish/Edit/@dish.Id" class="btn btn-warning btn-sm me-2">Edit</a>
+
+                                
+                            </div>
+                        }
+                        <form asp-controller="Cart" asp-action="AddItem" method="post">
+                            <input type="hidden" name="dishId" value="@dish.Id" />
+                            <button type="submit" class="btn btn-primary btn-sm">Add to Cart</button>
+                        </form>
+                       
                     </div>
                 </div>
             }

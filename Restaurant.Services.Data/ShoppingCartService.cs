@@ -127,12 +127,14 @@ namespace Restaurant.Services.Data
 
         public async Task<ShoppingCart> GetUserCart()
         {
+            if (GetUserId() == null)
+            {
+                throw new ArgumentException("First you have to login.");
+            }
+
             Guid? userId = Guid.Parse(GetUserId());
 
-            if (userId == null)
-            {
-                throw new Exception("Invalid userid");
-            }
+            
 
             var shoppingCart = await context.ShoppingCarts
                                   .Include(a => a.CartDetails)

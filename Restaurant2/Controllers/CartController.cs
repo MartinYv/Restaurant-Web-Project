@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using NuGet.Protocol.Plugins;
 using Restaurant.Services.Data.Interfaces;
 using Restaurant.ViewModels.Models.Order;
 
@@ -6,6 +8,7 @@ using static Restaurant.Common.NotificationMessagesConstants;
 
 namespace Restaurant.Web.Controllers
 {
+    
     public class CartController : Controller
     {
         private readonly IShoppingCartService _cartRepo;
@@ -34,9 +37,18 @@ namespace Restaurant.Web.Controllers
         }
         public async Task<IActionResult> GetUserCart()
         {
-            var cart = await _cartRepo.GetUserCart();
 
-            return View(cart);
+            try
+            {
+                var cart = await _cartRepo.GetUserCart();
+                return View(cart);
+
+            }
+            catch (Exception ex)
+            {
+                TempData[ErrorMessage] = ex.Message;
+                return RedirectToPage("/Account/Login", new { area = "Identity" });
+            }
         }
 
         public async Task<IActionResult> GetTotalItemInCart()

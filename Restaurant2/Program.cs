@@ -18,14 +18,27 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 builder.Services.AddDbContext<RestaurantDbContext>(options =>
     options.UseSqlServer(connectionString));
 
+builder.Services.AddAuthentication()
+    .AddCookie(options =>
+    {
+        options.LoginPath = "/Identity/Account/Login"; // Replace with your actual login page path
+    });
+
+
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
 {
-    options.SignIn.RequireConfirmedAccount = false;
-    options.Password.RequireDigit = false;
-    options.Password.RequireNonAlphanumeric = false;
-    options.Password.RequireUppercase = false;
+    options.SignIn.RequireConfirmedAccount =
+                         builder.Configuration.GetValue<bool>("Identity:SignIn:RequireConfirmedAccount");
+    options.Password.RequireLowercase =
+        builder.Configuration.GetValue<bool>("Identity:Password:RequireLowercase");
+    options.Password.RequireUppercase =
+        builder.Configuration.GetValue<bool>("Identity:Password:RequireUppercase");
+    options.Password.RequireNonAlphanumeric =
+        builder.Configuration.GetValue<bool>("Identity:Password:RequireNonAlphanumeric");
+    options.Password.RequiredLength =
+        builder.Configuration.GetValue<int>("Identity:Password:RequiredLength");
 }).AddRoles<IdentityRole<Guid>>()
     .AddEntityFrameworkStores<RestaurantDbContext>();
 

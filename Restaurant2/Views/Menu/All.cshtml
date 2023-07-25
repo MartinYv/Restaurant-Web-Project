@@ -1,4 +1,5 @@
 ﻿@using Restaurant.ViewModels.Models.Menu;
+@using Restaurant.Web.Infrastucture.Extentions;
 
 @model IEnumerable<AllMenusViewModel>
 @{
@@ -23,10 +24,14 @@
                         <!-- Other card content here -->
                     </div>
                 </a>
+                @if (User.IsAdmin())
+                {
                     <form asp-controller="Menu" asp-action="Delete" method="post">
                         <input type="hidden" name="menuId" value="@menu.Id" />
                         <button type="submit">Delete</button>
                     </form>
+                }
+                   
             </div>
         }
     </div>
