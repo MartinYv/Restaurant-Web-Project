@@ -18,7 +18,7 @@
                 <a href="@Url.Action("AllMenuDishes", "Menu", new { menuId = menu.Id })" class="card h-100 position-relative">
                     <img src="@menu.ImageUrl" class="card-img-top" alt="Menu Image" style="width: 18rem; height: 15rem;">
                     <div class="menu-type-overlay">
-                        <h5 class="card-title">@menu.MenuType</h5>
+                        <h5 class="card-title">@string.Concat(menu.MenuType + "s")</h5>
                     </div>
                     <div class="card-body">
                         <!-- Other card content here -->

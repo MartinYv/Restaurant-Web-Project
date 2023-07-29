@@ -1,16 +1,13 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore.Migrations.Operations;
-using Restaurant.Data.Models;
-using Restaurant.Services.Data;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Restaurant.Services.Data.Interfaces;
 using Restaurant.ViewModels.Models.Dish;
-using System.Reflection.Metadata.Ecma335;
-using System.Security.Claims;
 
 using static Restaurant.Common.NotificationMessagesConstants;
 
 namespace Restaurant.Web.Controllers
 {
+    [Authorize(Roles = "Administrator")]
     public class DishController : Controller
     {
         private readonly IDishService dishService;

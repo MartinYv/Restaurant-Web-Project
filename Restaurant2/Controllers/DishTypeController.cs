@@ -1,11 +1,14 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Restaurant.Data.Models;
+using Microsoft.AspNetCore.Authorization;
 using Restaurant.Services.Data.Interfaces;
 using Restaurant.ViewModels.Models.Dish;
+using System.Data;
 using static Restaurant.Common.NotificationMessagesConstants;
 
 namespace Restaurant.Web.Controllers
 {
+    [Authorize(Roles = "Administrator")]
+
     public class DishTypeController : Controller
     {
         private readonly IDishTypeService dishTypeService;

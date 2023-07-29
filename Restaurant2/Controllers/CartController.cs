@@ -8,7 +8,7 @@ using static Restaurant.Common.NotificationMessagesConstants;
 
 namespace Restaurant.Web.Controllers
 {
-    
+    [Authorize]
     public class CartController : Controller
     {
         private readonly IShoppingCartService _cartRepo;
@@ -58,6 +58,7 @@ namespace Restaurant.Web.Controllers
             return Ok(cartItem);
         }
 
+        [Authorize]
         public async Task<IActionResult> Checkout(OrderUsersInfoViewModel usersInfo)
         {
             bool isCheckedOut = await _cartRepo.DoCheckout(usersInfo);

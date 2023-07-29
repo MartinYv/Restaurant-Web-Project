@@ -1,4 +1,6 @@
-﻿<!DOCTYPE html>
+﻿@using Restaurant.Web.Infrastucture.Extentions;
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -27,9 +29,19 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Gallery">Gallery</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Menu">Menu</a>
-                        </li>                      
+
+                        @if (User.IsAdmin())
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Menu">Menu</a>
+                            </li>
+                        }
+                           else
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Menu" asp-action="All">Menu</a>
+                            </li>
+                        }                  
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Reservation" asp-action="Add">Reservation</a>
                         </li>
@@ -53,17 +65,7 @@
     </header>
 
 
-    
-    <div class="opening-time">
-        <h3>
-            Opening times
-        </h3>
-        <p>
-            <span>Monday—Thursday: 08:00 — 22:00</span>
-            <span>Friday—Saturday: 09:00 — 23:00 </span>
-            <span>Sunday: 10:00 — 17:00</span>
-        </p>
-    </div>
+   
 
 
     <div class="container">
@@ -73,10 +75,23 @@
     </div>
 
     <footer class="border-top footer text-muted">
+
+
+        <div class="opening-time">
+            <h3>Opening times</h3>
+            <p>
+                <span>Monday—Thursday: 08:00 — 22:00</span>
+                <span>Friday—Saturday: 09:00 — 23:00</span>
+                <span>Sunday: 10:00 — 17:00</span>
+            </p>
+        </div>
+
         <div class="container">
             &copy; 2023 - Restaurant - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
     </footer>
+
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>

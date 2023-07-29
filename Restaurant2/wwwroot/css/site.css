@@ -1,18 +1,33 @@
 html {
-  font-size: 14px;
+    font-size: 14px;
 }
 
 @media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
+    html {
+        font-size: 16px;
+    }
 }
 
 html {
-  position: relative;
-  min-height: 100%;
+    position: relative;
+    min-height: 100%;
 }
 
 body {
-  margin-bottom: 60px;
+    margin-bottom: 60px;
 }
+
+
+
+
+/* Social media section css */
+.social-media-button-container {
+    display: inline-block;
+}
+
+    .social-media-button-container a {
+        color: #333; /* Change color as per your preference */
+        font-size: 24px;
+        margin-right: 10px; /* Add some space between icons */
+    }
+/* Social media section css */

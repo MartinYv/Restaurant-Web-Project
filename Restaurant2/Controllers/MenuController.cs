@@ -1,15 +1,14 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Restaurant.Services.Data;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Restaurant.Services.Data.Interfaces;
 using Restaurant.Services.Data.Models.Menu;
-using Restaurant.Services.Data.Models.Order;
 using Restaurant.ViewModels.Models.Menu;
 
 using static Restaurant.Common.NotificationMessagesConstants;
 
 namespace Restaurant.Web.Controllers
 {
+    [Authorize(Roles = "Administrator")]
     public class MenuController : Controller
     {
         private readonly IMenuService menuService;
@@ -52,7 +51,7 @@ namespace Restaurant.Web.Controllers
             }
 
         }
-
+        [AllowAnonymous]
         public async Task<IActionResult> All()
         {
             var model = await menuService.AllMenusAsync();
@@ -73,6 +72,8 @@ namespace Restaurant.Web.Controllers
                 return RedirectToAction(nameof(All));
             }
         }
+
+        [AllowAnonymous]
 
         public async Task<IActionResult> AllMenuDishes([FromQuery] AllMenuDishesQueryViewModel queryModel, int menuId)
         {

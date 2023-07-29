@@ -1,14 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Restaurant.Data.Models;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Restaurant.Services.Data.Interfaces;
 using Restaurant.Services.Data.Models.Order;
 using Restaurant.ViewModels.Models.Order;
-using Restaurant.ViewModels.Order;
-using System.Security.Claims;
 
 namespace Restaurant.Web.Controllers
 {
+    [Authorize]
     public class OrderController : Controller
 	{
 		private readonly IOrderService orderService;
@@ -24,7 +22,6 @@ namespace Restaurant.Web.Controllers
 			var model = await orderService.AllOrdersAcync();
 			return View(model);
 		}
-
 
 		[HttpGet]
 		public IActionResult FinishOrder()
@@ -66,9 +63,8 @@ namespace Restaurant.Web.Controllers
 
 		}
 
-
-		[HttpGet]
-		
+        [Authorize(Roles = "Administrator")]
+        [HttpGet]
 		public async Task<IActionResult> AllFiltered([FromQuery] AllOrdersQueryViewModel queryModel)
 		{
 			AllOrdersFilteredServiceModel serviceModel =

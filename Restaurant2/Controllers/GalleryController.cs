@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 using Restaurant2.Data;
 
 namespace Restaurant.Web.Controllers
 {
+    [AllowAnonymous]
     public class GalleryController : Controller
     {
         private readonly RestaurantDbContext context;
