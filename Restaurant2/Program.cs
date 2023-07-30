@@ -18,11 +18,10 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 builder.Services.AddDbContext<RestaurantDbContext>(options =>
     options.UseSqlServer(connectionString));
 
-builder.Services.AddAuthentication()
-    .AddCookie(options =>
-    {
-        options.LoginPath = "/Identity/Account/Login"; // Replace with your actual login page path
-    });
+builder.Services.ConfigureApplicationCookie(cfg =>
+{
+    cfg.LoginPath = "/User/Login";
+});
 
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
@@ -47,18 +46,7 @@ builder.Services.AddControllersWithViews();
 //Through this extended method we add all of the services throug reflection, the code bellow it(all the services) its not needed.
 builder.Services.AddApplicationServices(typeof(IOrderService));
 
-//builder.Services.AddScoped<IDishTypeService, DishTypeService>();
-//builder.Services.AddScoped<IDishService, DishService>();
 
-//builder.Services.AddScoped<IMenuService, MenuService>();
-
-//builder.Services.AddScoped<IOrderService, OrderService>();
-
-//builder.Services.AddScoped<IShoppingCartService, ShoppingCartService>();
-
-//builder.Services.AddScoped<ITableService, TableService>();
-
-//builder.Services.AddScoped<IReservationService, ReservationService>();
 
 builder.Services.AddSession(); // asdasd
 
@@ -78,11 +66,13 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseMigrationsEndPoint();
+    app.UseDeveloperExceptionPage();
 }
 else
 {
-    app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+    app.UseExceptionHandler("/Home/Error/500");
+    app.UseStatusCodePagesWithRedirects("/Home/Error?statusCode={0}");
+
     app.UseHsts();
 }
 
