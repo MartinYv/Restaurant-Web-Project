@@ -47,7 +47,7 @@ namespace Restaurant.Web.Controllers
 			try
 			{
                 AllOrdersFilteredServiceModel serviceModel =
-                await orderService.UsersOrdersAsync(queryModel);
+                await orderService.UserOrdersAsync(queryModel);
 
                 queryModel.Orders = serviceModel.Orders;
                 queryModel.TotalOrders = serviceModel.TotalOrdersCount;

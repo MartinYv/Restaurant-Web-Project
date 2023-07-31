@@ -36,7 +36,7 @@ namespace Restaurant.Services.Data
 			{
 				FirstName = o.FirstName,
 				LastName = o.LastName,
-				Address = o.Address,                                          // TO FIX THE INCULDES, DISH IS ALWAYS NULL!!!!!!
+				Address = o.Address,                                          
 				Phone = o.Phone,
 				Price = o.Price.ToString(),
 				CustomerId = o.CustomerId,
@@ -54,7 +54,7 @@ namespace Restaurant.Services.Data
 			return userId;
 		}
 
-		public async Task<AllOrdersFilteredServiceModel> UsersOrdersAsync(AllOrdersQueryViewModel queryModel)
+		public async Task<AllOrdersFilteredServiceModel> UserOrdersAsync(AllOrdersQueryViewModel queryModel)
 		{
 			string? userId = GetUserId();
 			if (userId == null)

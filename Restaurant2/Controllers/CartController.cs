@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using NuGet.Protocol.Plugins;
 using Restaurant.Services.Data.Interfaces;
 using Restaurant.ViewModels.Models.Order;
 
@@ -11,27 +10,45 @@ namespace Restaurant.Web.Controllers
     [Authorize]
     public class CartController : Controller
     {
-        private readonly IShoppingCartService _cartRepo;
+        private readonly IShoppingCartService cartService;
 
         public CartController(IShoppingCartService cartRepo)
         {
-            _cartRepo = cartRepo;
+            cartService = cartRepo;
         }
         public async Task<IActionResult> AddItem(int dishId, int qty = 1, int redirect = 0)
         {
-            var cartCount = await _cartRepo.AddItem(dishId, qty);
-
-            if (redirect == 0)
+            try
             {
-                return Ok(cartCount);
-            }
-
+                /*var cartCount = */await cartService.AddItem(dishId, qty);
+                TempData[SuccessMessage] = "Successfully added";
             return RedirectToAction("GetUserCart");
+
+            }
+            catch (Exception ex)
+            {
+                TempData[ErrorMessage] = ex.Message;
+               return RedirectToAction("GetUserCart");
+            }
+            //if (redirect == 0)
+            //{
+            //    return Ok(cartCount);             // TO DO if redirect is equal to 0 to stay at the same page
+            //}
+
         }
 
         public async Task<IActionResult> RemoveItem(int dishId)
         {
-            var cartCount = await _cartRepo.RemoveItem(dishId);
+            try
+            {
+            /*var cartCount = */await cartService.RemoveItem(dishId);
+
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
 
             return RedirectToAction("GetUserCart");
         }
@@ -40,7 +57,7 @@ namespace Restaurant.Web.Controllers
 
             try
             {
-                var cart = await _cartRepo.GetUserCart();
+                var cart = await cartService.GetUserCart();
                 return View(cart);
 
             }
@@ -53,7 +70,7 @@ namespace Restaurant.Web.Controllers
 
         public async Task<IActionResult> GetTotalItemInCart()
         {
-            int cartItem = await _cartRepo.GetCartItemCount();
+            int cartItem = await cartService.GetCartItemCount();
 
             return Ok(cartItem);
         }
@@ -61,16 +78,20 @@ namespace Restaurant.Web.Controllers
         [Authorize]
         public async Task<IActionResult> Checkout(OrderUsersInfoViewModel usersInfo)
         {
-            bool isCheckedOut = await _cartRepo.DoCheckout(usersInfo);
 
-            if (!isCheckedOut)
+            try
             {
+                await cartService.DoCheckout(usersInfo);
+
+                TempData[SuccessMessage] = "Your order is successfully recieved. We will call you when our deliveryman is at your address.";
+                return RedirectToAction("MyOrders", "Order");
+            }
+            catch (Exception)
+            {
+
                 TempData[ErrorMessage] = "Something went wrong";
                 throw new Exception("Something happen in server side");
-            }
-
-            TempData[SuccessMessage] = "Your order is successfully recieved. We will call you when our deliveryman is at your address.";
-            return RedirectToAction("Index", "Home");
+            }               
         }
 
     }

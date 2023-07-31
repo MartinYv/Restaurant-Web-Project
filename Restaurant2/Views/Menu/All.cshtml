@@ -3,7 +3,7 @@
 
 @model IEnumerable<AllMenusViewModel>
 @{
-    ViewBag.Title = "All Menus";
+    ViewBag.Title = "Our Menus";
 }
 
 <h2 class="text-center">@ViewBag.Title</h2>
@@ -13,9 +13,8 @@
     <div class="row row-cols-1 row-cols-md-3 g-4">
         @foreach (var menu in Model)
         {   
-
             <div class="col">
-                <a href="@Url.Action("AllMenuDishes", "Menu", new { menuId = menu.Id })" class="card h-100 position-relative">
+                <a href="@Url.Action("AllMenuDishes", "Menu", new { menuId = menu.Id })" class="category-item__link focus">
                     <img src="@menu.ImageUrl" class="card-img-top" alt="Menu Image" style="width: 18rem; height: 15rem;">
                     <div class="menu-type-overlay">
                         <h5 class="card-title">@string.Concat(menu.MenuType + "s")</h5>
