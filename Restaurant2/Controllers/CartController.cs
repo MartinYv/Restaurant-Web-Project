@@ -16,9 +16,17 @@ namespace Restaurant.Web.Controllers
         {
             cartService = cartRepo;
         }
+
+        [AllowAnonymous]
         public async Task<IActionResult> AddItem(int dishId, int qty = 1, int redirect = 0)
         {
-            try
+            if (User?.Identity?.IsAuthenticated == false)
+            {
+                TempData[WarningMessage] = "First you have to log-in.";
+				return RedirectToPage("/Account/Login", new { area = "Identity" }); // js is making problems, to fix that
+
+			}
+			try
             {
                 /*var cartCount = */await cartService.AddItem(dishId, qty);
                 TempData[SuccessMessage] = "Successfully added";
