@@ -4,6 +4,8 @@ using Restaurant.Services.Data.Interfaces;
 using Restaurant.Services.Data.Models.Order;
 using Restaurant.ViewModels.Models.Order;
 
+using static Restaurant.Common.NotificationMessagesConstants;
+
 namespace Restaurant.Web.Controllers
 {
     [Authorize]
@@ -76,5 +78,24 @@ namespace Restaurant.Web.Controllers
 
 			return View("AllSorted",queryModel);
 		}
-	}
+
+
+        [Authorize(Roles = "Administrator")]
+        [HttpPost]
+        public async Task<IActionResult> ChangeStatus(int orderId)
+		{
+			try
+			{
+				await orderService.ChangeStatusByIdAsync(orderId);
+				TempData[SuccessMessage] = "Order status successfully changed.";
+			}
+			catch (Exception ex)
+			{
+                TempData[ErrorMessage] = ex.Message;
+            }
+
+            return RedirectToAction(nameof(AllFiltered));
+
+        }
+    }
 }

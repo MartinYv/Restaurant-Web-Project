@@ -4,6 +4,7 @@ namespace Restaurant.ViewModels.Models.Order
 {
     public class OrderViewModel
     {
+        public int Id { get; set; }
         public Guid CustomerId { get; set; }
         public string FirstName { get; set; } = null!;
         public string LastName { get; set; } = null!;

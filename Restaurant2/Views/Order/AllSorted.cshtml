@@ -88,7 +88,7 @@
 
 @if (!Model.Orders.Any())
 {
-    <h2 class="text-center">No houses found by the given criteria!</h2>
+    <h2 class="text-center">No orders found by the given criteria!</h2>
 }
 else
 {
@@ -153,7 +153,13 @@ else
                         }
                     </tbody>
                 </table>
+
             </div>
+
+            <form asp-controller="Order" asp-action="ChangeStatus" method="post">
+                <input type="hidden" name="orderId" value="@order.Id" />
+                <button type="submit" class="btn btn-primary btn-sm">Change Status</button>
+            </form>
         }
     </div>
 }

@@ -41,16 +41,18 @@ namespace Restaurant.Web.Controllers
         {
             try
             {
-            /*var cartCount = */await cartService.RemoveItem(dishId);
+           await cartService.RemoveItem(dishId);
+                return RedirectToAction("GetUserCart");
+
 
             }
             catch (Exception)
             {
 
-                throw;
+                return RedirectToAction("GetUserCart");
+
             }
 
-            return RedirectToAction("GetUserCart");
         }
         public async Task<IActionResult> GetUserCart()
         {

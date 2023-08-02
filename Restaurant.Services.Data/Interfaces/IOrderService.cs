@@ -19,5 +19,7 @@ namespace Restaurant.Services.Data.Interfaces
         Task<AllOrdersFilteredServiceModel> AllFilteredAsync(AllOrdersQueryViewModel queryModel);
 
         Task<IEnumerable<string>> AllCategoryNamesAsync();
+        Task<Order?> FindOrderByIdAsync(int orderId);
+        Task ChangeStatusByIdAsync(int orderId);
     }
 }
