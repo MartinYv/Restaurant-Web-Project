@@ -1,69 +1,65 @@
-﻿namespace Restaurant2.Controllers
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Restaurant2.Models;
+using System.Diagnostics;
+
+namespace Restaurant2.Controllers
 {
-	using Microsoft.AspNetCore.Authorization;
-	using Microsoft.AspNetCore.Mvc;
+    [AllowAnonymous]
+    public class HomeController : Controller
+    {
+        private readonly ILogger<HomeController> _logger;
 
-	using static Restaurant.Common.GeneralApplicationConstants;
+        public HomeController(ILogger<HomeController> logger)
+        {
+            _logger = logger;
+        }
 
-	[AllowAnonymous]
-	public class HomeController : Controller
-	{
-		private readonly ILogger<HomeController> _logger;
+        public IActionResult Index()
+        {
+            return View();
+        }
 
-		public HomeController(ILogger<HomeController> logger)
-		{
-			_logger = logger;
-		}
+        public IActionResult Privacy()
+        {
+            return View();
+        }
 
-		public IActionResult Index()
-		{
-			if (User.IsInRole(AdminRoleName))
-			{
-				return RedirectToAction("Index", "Home", new { area = AdminAreaName });
-			}
-			return View();
-		}
+        public IActionResult Gallery()
+        {
+            return View("Gallery");
+        }
+        public IActionResult Menu()
+        {
+            return View();
+        }
+        public IActionResult Order()
+        {
+            return View();
+        }
+        public IActionResult Reservation()
+        {
+            return View();
+        }
+        public IActionResult About()
+        {
+            return View();
+        }
 
-		public IActionResult Privacy()
-		{
-			return View();
-		}
+        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+        public IActionResult Error(int statusCode)
+        {
+            if (statusCode == 400 || statusCode == 404)
+            {
+                return View("Error404");
+            }
 
-		public IActionResult Gallery()
-		{
-			return View("Gallery");
-		}
-		public IActionResult Menu()
-		{
-			return View();
-		}
-		public IActionResult Order()
-		{
-			return View();
-		}
-		public IActionResult Reservation()
-		{
-			return View();
-		}
-		public IActionResult About()
-		{
-			return View();
-		}
+            if (statusCode == 401)
+            {
+                return View("Error401");
+            }
 
-		[ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-		public IActionResult Error(int statusCode)
-		{
-			if (statusCode == 400 || statusCode == 404 || statusCode == 0)
-			{
-				return View("Error404");
-			}
-
-			if (statusCode == 401)
-			{
-				return View("Error401");
-			}
-
-			return View();
-		}
-	}
+            return View();
+        }
+    }
 }

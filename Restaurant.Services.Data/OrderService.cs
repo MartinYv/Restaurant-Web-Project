@@ -1,16 +1,23 @@
-﻿namespace Restaurant.Services.Data
-{
-	using System.Security.Claims;
-	using Microsoft.AspNetCore.Http;
-	using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
+using Restaurant.Data.Models;
+using Restaurant.Services.Data.Interfaces;
+using Restaurant.Services.Data.Models.Order;
+using Restaurant.ViewModels.Models.Order;
+using Restaurant.ViewModels.Order.Enum;
+using Restaurant2.Data;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Security.Claims;
+using System.Text;
+using System.Threading.Tasks;
+using System.Web.Mvc;
 
-	using Restaurant2.Data;
-	using Restaurant.Data.Models;
-	using Restaurant.Services.Data.Interfaces;
-	using Restaurant.Services.Data.Models.Order;
-	using Restaurant.ViewModels.Models.Order;
-	using Restaurant.ViewModels.Order.Enum;
-	public class OrderService : IOrderService
+namespace Restaurant.Services.Data
+{
+    public class OrderService : IOrderService
     {
         private readonly RestaurantDbContext context;
         private readonly IHttpContextAccessor httpContextAccessor;
@@ -20,6 +27,8 @@
             context = _context;
             httpContextAccessor = _httpContextAccessor;
         }
+
+
 
         public async Task<IEnumerable<OrderViewModel>> AllOrdersAcync()
         {
@@ -106,6 +115,7 @@
             };
         }
 
+
         public async Task<AllOrdersFilteredServiceModel> AllFilteredAsync(AllOrdersQueryViewModel queryModel)
         {
             var ordersQuery = context.Orders.Include(o => o.OrderDetail).ThenInclude(o => o.Dish).AsQueryable();
@@ -141,6 +151,7 @@
             };
 
 
+
             IEnumerable<OrderViewModel> allOrders = await ordersQuery
            .Where(o => o.IsDeleted == false)
            .Skip((queryModel.CurrentPage - 1) * queryModel.OrdersPerPage)
@@ -158,7 +169,6 @@
                OrderDetail = o.OrderDetail
            })
            .ToListAsync();
-           
             int totalOrders = ordersQuery.Count();
 
             return new AllOrdersFilteredServiceModel()
@@ -166,6 +176,11 @@
                 TotalOrdersCount = totalOrders,
                 Orders = allOrders
             };
+        }
+
+        public Task<IEnumerable<string>> AllCategoryNamesAsync()
+        {
+            throw new NotImplementedException();
         }
 
         public async Task<Order?> FindOrderByIdAsync(int orderId)
@@ -182,6 +197,7 @@
                 throw new ArgumentException("Invalid order id");
             }
 
+
             if (order.IsCompleted == false)
             {
                 order.IsCompleted = true;
@@ -195,3 +211,5 @@
         }
     }
 }
+
+

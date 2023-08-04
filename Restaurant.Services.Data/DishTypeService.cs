@@ -4,6 +4,7 @@ using Restaurant.Services.Data.Interfaces;
 using Restaurant.ViewModels.Models.Dish;
 
 using Restaurant2.Data;
+using static Restaurant.Common.EntityValidationConstants;
 
 namespace Restaurant.Services.Data
 {
@@ -83,7 +84,5 @@ namespace Restaurant.Services.Data
 				Name = dt.Name
 			}).FirstOrDefaultAsync();
 		}
-
-
 	}
 }

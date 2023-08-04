@@ -53,8 +53,13 @@
 							<a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="About">About us</a>
 						</li>
 
-					
-						@if (User?.Identity?.IsAuthenticated == true && !User.IsAdmin())
+						@if (User.IsAdmin())
+						{
+							<li class="nav-item">
+								<a class="nav-link text-dark" asp-area="" asp-controller="Order" asp-action="AllFiltered">All orders</a>
+							</li>
+						}
+						else if (User?.Identity?.IsAuthenticated ?? false)
 						{					
 							<li class="nav-item">
 								<a class="nav-link text-dark" asp-area="" asp-controller="Order" asp-action="MyOrders">My orders</a>
