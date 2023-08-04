@@ -3,6 +3,7 @@
 	using System.Globalization;
 
 	using Microsoft.AspNetCore.Mvc.ModelBinding;
+	using Microsoft.AspNetCore.Mvc.ModelBinding.Binders;
 
 	public class DecimalModelBinder : IModelBinder
 	{

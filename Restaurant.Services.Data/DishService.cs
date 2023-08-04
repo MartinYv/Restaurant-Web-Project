@@ -1,12 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Restaurant.Data.Models;
-using Restaurant.Services.Data.Interfaces;
-using Restaurant.ViewModels.Models.Dish;
-using Restaurant2.Data;
-using System.Security.Cryptography.X509Certificates;
-
-namespace Restaurant.Services.Data
+﻿namespace Restaurant.Services.Data
 {
+	using Microsoft.EntityFrameworkCore;
+
+	using Restaurant2.Data;
+	using Restaurant.Data.Models;
+	using Restaurant.Services.Data.Interfaces;
+	using Restaurant.ViewModels.Models.Dish;
 
 	public class DishService : IDishService
 	{
@@ -29,19 +28,17 @@ namespace Restaurant.Services.Data
 				Name = model.Name,
 				Description = model.Description,
 				DishTypeId = model.DishTypeId,
-				DishType = dishTypeName,
+				DishType = dishTypeName!,
 				ImageUrl = model.ImageUrl,
 				Price = model.Price,
 				IsDeleted = false
 			};
-
 
 			await menuService.AddDishAsync(dish);
 			await context.Dishes.AddAsync(dish);
 
 			await context.SaveChangesAsync();
 		}
-
 
 		public async Task<IEnumerable<AllDishesViewModel>> AllDishesAsync()
 		{
@@ -85,8 +82,6 @@ namespace Restaurant.Services.Data
 
 		public async Task<AddDishViewModel?> GetDishForEditByIdAsync(int id)
 		{
-
-
 			Dish? dish = await GetDishById(id);
 
 			if (dish == null)

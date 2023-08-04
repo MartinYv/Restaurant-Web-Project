@@ -3,17 +3,13 @@ using Restaurant.Data.Models;
 using Restaurant.Services.Data.Interfaces;
 using Restaurant.ViewModels.Models.Menu;
 using Restaurant2.Data;
-using System.Security.Cryptography.X509Certificates;
-using Restaurant2.Models;
 using Restaurant.Services.Data.Models.Menu;
-using Restaurant.Services.Data.Models.Order;
-using Restaurant.ViewModels.Models.Order;
 using Restaurant.ViewModels.Order.Enum;
 using Restaurant.ViewModels.Models.Dish;
 
 namespace Restaurant.Services.Data
 {
-    public class MenuService : IMenuService
+	public class MenuService : IMenuService
     {
         private readonly RestaurantDbContext context;
 
@@ -91,6 +87,7 @@ namespace Restaurant.Services.Data
 
             menu.Dishes.Add(dish);
         }
+
 
         public async Task<AllMenuDishesFilteredServiceModel> MenuAllDishesAsync(AllMenuDishesQueryViewModel queryModel)
         {
