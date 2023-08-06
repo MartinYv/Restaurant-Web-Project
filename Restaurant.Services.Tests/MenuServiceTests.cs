@@ -87,24 +87,44 @@
 			await dbContext.DishTypes.AddAsync(dishType);
 			await dbContext.SaveChangesAsync();
 
-			var menu = new Menu { DishTypeId = dishType.Id, DishType = dishType, ImageUrl = "Testurl.jpg" };
+			var menu = new Menu ()
+			{
+				DishTypeId = dishType.Id,
+				DishType = dishType,
+				ImageUrl = "Testurl.jpg"
+			};
 
 			await dbContext.Menus.AddAsync(menu);
 			await dbContext.SaveChangesAsync();
 
-			var existingDish = new Dish { Name = "Test Dish", Description = "Existing Description", ImageUrl = "Testurl.jpg", Price = 15.0M, DishType = dishType, DishTypeId = dishType.Id };
+			var existingDish = new Dish() 
+			{ 
+				Name = "Test Dish",
+				Description = "Existing Description",
+				ImageUrl = "Testurl.jpg",
+				Price = 15.0M,
+				DishType = dishType,
+				DishTypeId = dishType.Id
+			};
 
 			menu.Dishes.Add(existingDish);
 			await dbContext.SaveChangesAsync();
 
-			var dish = new Dish { Name = "Test Dish", Description = "New Description", Price = 10.0M, DishType = dishType, DishTypeId = dishType.Id, ImageUrl = "Testurl.jpg" };
+			var dish = new Dish()
+			{
+				Name = "Test Dish", 
+				Description = "New Description",
+				Price = 10.0M, 
+				DishType = dishType, 
+				DishTypeId = dishType.Id,
+				ImageUrl = "Testurl.jpg"
+			};
 
 			var exception = Assert.ThrowsAsync<ArgumentException>(async () => await menuService.AddDishAsync(dish));
 			Assert.That(exception.Message, Is.EqualTo("Dish with that name is already added"));
 
 			dbContext.Database.EnsureDeleted();
 		}
-
 
 		[Test]
 		public async Task GetAllMenuTypes_ShouldReturnAllMenuTypes()

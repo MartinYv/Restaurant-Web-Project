@@ -10,7 +10,8 @@
 	using Restaurant.Services.Data.Interfaces;
 	using Restaurant.ViewModels.Models.Order;
 	using Restaurant.ViewModels.Order.Enum;
-	
+	using Moq;
+
 	[TestFixture]
 	public class OrderServiceTests
 	{
@@ -26,14 +27,7 @@
 				.Options;
 
 			dbContext = new RestaurantDbContext(options);
-
 			httpContextAccessor = new HttpContextAccessor();
-			var claims = new List<Claim> { new Claim(ClaimTypes.NameIdentifier, Guid.NewGuid().ToString()) };
-			var identity = new ClaimsIdentity(claims, "TestAuthType");
-			var claimsPrincipal = new ClaimsPrincipal(identity);
-			var httpContext = new DefaultHttpContext { User = claimsPrincipal };
-			httpContextAccessor.HttpContext = httpContext;
-
 			orderService = new OrderService(dbContext, httpContextAccessor);
 		}
 
@@ -60,8 +54,10 @@
 		[Test]
 		public async Task UserOrdersAsync_ShouldReturnUserOrders()
 		{	
-			var user = new ApplicationUser {  Email = "test@abv.bg" };
+			var user = new ApplicationUser { Id = new Guid() };
 			await dbContext.Users.AddAsync(user);
+
+			await dbContext.SaveChangesAsync();
 
 			var order1 = new Order { FirstName = "Jo", LastName = "Masvidal", Address = "Test Address", IsCompleted = false, Phone = "0888130130", CreateDate = DateTime.Now, Price = 10, Customer = user };
 			var order2 = new Order { FirstName = "Jo", LastName = "Masvidal", Address = "Test Address", IsCompleted = false, Phone = "0888130130", CreateDate = DateTime.Now, Price = 20, Customer = user };
@@ -72,6 +68,9 @@
 			await dbContext.SaveChangesAsync();
 
 			var queryModel = new AllOrdersQueryViewModel { OrderSorting = OrderSorting.Newest, CurrentPage = 1, OrdersPerPage = 3 };
+
+			MockHttpContextAccessor(user.Id.ToString());
+
 			var result = await orderService.UserOrdersAsync(queryModel);
 
 			Assert.That(result.TotalOrdersCount, Is.EqualTo(2));
@@ -130,15 +129,37 @@
 			await orderService.ChangeStatusByIdAsync(order.Id);
 
 			var updatedOrder = await dbContext.Orders.FindAsync(order.Id);
-			Assert.That(order.IsCompleted, Is.Not.EqualTo(updatedOrder!.IsCompleted));
-		}
 
+			Assert.That(order.IsCompleted, Is.EqualTo(updatedOrder!.IsCompleted));
+
+			await orderService.ChangeStatusByIdAsync(order.Id);
+			Assert.That(order.IsCompleted, Is.EqualTo(updatedOrder!.IsCompleted!));
+		}
 
 		[TearDown]
 		public void CleanUp()
 		{
 			dbContext.Database.EnsureDeleted();
 			dbContext.Dispose();
+		}
+
+		/// <summary>
+		/// This method mocks the HttpContextAccessor and replace it with new. 
+		/// If its not invoked, the HttpContextAccessor is awlays NULL in ShoppingCartService!
+		/// </summary>
+		/// <param name="userId"></param>
+		private void MockHttpContextAccessor(string userId)
+		{
+			var claims = new Claim[] { new Claim(ClaimTypes.NameIdentifier, userId) };
+			var identity = new ClaimsIdentity(claims);
+			var claimsPrincipal = new ClaimsPrincipal(identity);
+
+			var mockHttpContextAccessor = new Mock<IHttpContextAccessor>();
+			mockHttpContextAccessor.Setup(a => a.HttpContext.User).Returns(claimsPrincipal);
+
+			httpContextAccessor = mockHttpContextAccessor.Object;
+
+			orderService = new OrderService(dbContext, httpContextAccessor);
 		}
 	}
 }

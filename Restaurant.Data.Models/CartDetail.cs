@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -28,6 +29,7 @@ namespace Restaurant.Data.Models
         public int Quantity { get; set; }
 
         [Required]
-        public double UnitPrice { get; set; }
+        [Precision(18,2)]
+        public decimal UnitPrice { get; set; }
     }
 }

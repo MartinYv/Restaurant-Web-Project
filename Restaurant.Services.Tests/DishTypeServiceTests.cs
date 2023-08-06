@@ -89,6 +89,8 @@ namespace Restaurant.Tests.ServiceTests
 		[Test]
 		public void DeleteDishTypeAsync_ThrowsExeptionWhenDeleteNotExistingType()
 		{
+			dbContext.Database.EnsureDeleted();
+
 			int notExistingDishTypeId = 5;
 
 			Assert.ThrowsAsync<ArgumentException>(async () => await dishTypeService.DeleteDishTypeAsync(notExistingDishTypeId));
@@ -115,6 +117,7 @@ namespace Restaurant.Tests.ServiceTests
 		[Test]
 		public void EditDishTypeById_ShouldThrowExeption()
 		{
+
 			int notExistingDishTypeId = 5;
 			var model = new AddDishTypeViewModel { Name = "Not Existing" };
 

@@ -9,6 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="FakeHttpContext" Version="0.4.1" />
     <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.2.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="6.0.13" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.3.2" />

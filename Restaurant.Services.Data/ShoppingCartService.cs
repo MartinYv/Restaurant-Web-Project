@@ -1,14 +1,15 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore;
-using Restaurant.Data.Models;
-using Restaurant.Services.Data.Interfaces;
-using Restaurant.ViewModels.Models.Order;
-using Restaurant2.Data;
-using System.Security.Claims;
-
-namespace Restaurant.Services.Data
+﻿namespace Restaurant.Services.Data
 {
-    public class ShoppingCartService : IShoppingCartService
+	using Microsoft.AspNetCore.Http;
+	using Microsoft.EntityFrameworkCore;
+	using System.Security.Claims;
+
+	using Restaurant2.Data;
+	using Restaurant.Data.Models;
+	using Restaurant.Services.Data.Interfaces;
+	using Restaurant.ViewModels.Models.Order;
+
+	public class ShoppingCartService : IShoppingCartService
     {
         private readonly RestaurantDbContext context;
         private readonly IHttpContextAccessor httpContextAccessor;
@@ -23,11 +24,11 @@ namespace Restaurant.Services.Data
         {
             string? userId = GetUserId();
 
-            using var transaction = await context.Database.BeginTransactionAsync();
+           // using var transaction = await context.Database.BeginTransactionAsync();
 
             if (string.IsNullOrEmpty(userId))
             {
-                throw new Exception("user is not logged-in");
+                throw new ArgumentException ("user is not logged-in");
 
             }
 
@@ -70,7 +71,7 @@ namespace Restaurant.Services.Data
             }
 
             await context.SaveChangesAsync();
-            transaction.Commit();
+           // transaction.Commit();
         }
 
         // var cartItemCount = await GetCartItemCount(userId);
@@ -121,7 +122,7 @@ namespace Restaurant.Services.Data
                 throw new ArgumentException("First you have to login.");
             }
 
-            Guid? userId = Guid.Parse(GetUserId());
+            Guid? userId = Guid.Parse(GetUserId()!);
 
 
             var shoppingCart = await context.ShoppingCarts
@@ -154,7 +155,6 @@ namespace Restaurant.Services.Data
 
         public async Task<bool> DoCheckout(OrderUsersInfoViewModel usersInfo)
         {
-            using var transaction = await context.Database.BeginTransactionAsync();
 
             var userId = GetUserId();
 
@@ -196,7 +196,6 @@ namespace Restaurant.Services.Data
                 CreateDate = DateTime.UtcNow,
                 IsCompleted = false,
                 IsDeleted = false
-                //OrderStatusId = 1//pending
             };
 
             await context.Orders.AddAsync(order);
@@ -217,7 +216,7 @@ namespace Restaurant.Services.Data
                 await context.OrderDetails.AddAsync(orderDetail);
             }
 
-            order.Price = (decimal)order.OrderDetail.Sum(x => x.Quantity * x.UnitPrice);
+            order.Price = order.OrderDetail.Sum(x => x.Quantity * x.UnitPrice);
             await context.SaveChangesAsync();
 
 
@@ -226,7 +225,6 @@ namespace Restaurant.Services.Data
             user.OrdersPlaced.Add(order);
 
             await context.SaveChangesAsync();
-            transaction.Commit();
 
             return true;
         }

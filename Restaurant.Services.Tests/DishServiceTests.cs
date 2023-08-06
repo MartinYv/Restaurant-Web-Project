@@ -1,21 +1,20 @@
 ﻿namespace Restaurant.Tests.ServiceTests
 {
 	using Microsoft.EntityFrameworkCore;
-	using Moq;
 
 	using Restaurant2.Data;
 	using Restaurant.Services.Data;
 	using Restaurant.Services.Data.Interfaces;
 	using Restaurant.ViewModels.Models.Dish;
-	using Restaurant.Data.Models;
+	using Restaurant.ViewModels.Models.Menu;
 
 	[TestFixture]
 	public class DishServiceTests
 	{
 		private RestaurantDbContext dbContext;
-		private Mock<IMenuService> menuServiceMock;
-		private Mock<IDishTypeService> dishTypeServiceMock;
+		private IDishTypeService dishTypeService;
 		private IDishService dishService;
+		private IMenuService menuService;
 
 		[SetUp]
 		public void Setup()
@@ -26,20 +25,20 @@
 
 			dbContext = new RestaurantDbContext(options);
 
-			menuServiceMock = new Mock<IMenuService>();
-			dishTypeServiceMock = new Mock<IDishTypeService>();
-
-			dishService = new DishService(dbContext, menuServiceMock.Object);
-			 MenuService menuService = new MenuService(dbContext);
+			menuService = new MenuService(dbContext);
+			dishTypeService = new DishTypeService(dbContext);
+			dishService = new DishService(dbContext, menuService);
 		}
 
 		[Test]
 		public async Task Add_ShouldAddDish()
 		{
-			DishType dishType = new DishType() { Id = 1, Name = "Test type" };
-			dishTypeServiceMock
+			AddDishTypeViewModel dishType = new AddDishTypeViewModel() { Name = "Test type" };
+			await dishTypeService.AddDishTypeAsync(dishType);
 
-			var dishTypeName = "Test Dish Type";
+			AddMenuViewModel menuType = new AddMenuViewModel() { Id = 1, ImageUrl = " TestUrl.bg" };
+			await menuService.AddMenuAcync(menuType);
+
 			var model = new AddDishViewModel
 			{
 				Name = "Test Dish",
@@ -47,84 +46,276 @@
 				DishTypeId = 1,
 				ImageUrl = "test.jpg",
 				Price = 10.33m
+
 			};
 
-			menuServiceMock.Setup(ms => ms.AddDishAsync(It.IsAny<Dish>()));
-
-			// Act
 			await dishService.Add(model);
 
-			// Assert
 			var addedDish = await dbContext.Dishes.FirstOrDefaultAsync(d => d.Name == "Test Dish");
+
 			Assert.NotNull(addedDish);
-			Assert.AreEqual(dishTypeName, addedDish.DishType.Name);
+			Assert.That(addedDish.DishType.Name, Is.EqualTo(dishType.Name));
 		}
 
 		[Test]
-		public async Task Add_ShouldThrowArgumentException_WhenDishTypeNotFound()
+		public async Task Add_ShouldThrowArgumentException_WhenAddingExistingDish()
 		{
-			// Arrange
+			AddDishTypeViewModel dishType = new AddDishTypeViewModel() { Name = "Test type" };
+			await dishTypeService.AddDishTypeAsync(dishType);
+
+			AddMenuViewModel menuType = new AddMenuViewModel() { Id = 1, ImageUrl = " TestUrl.bg" };
+			await menuService.AddMenuAcync(menuType);
+
 			var model = new AddDishViewModel
 			{
 				Name = "Test Dish",
 				Description = "Test Description",
-				DishTypeId = 1, // DishType with this ID doesn't exist
+				DishTypeId = 1,
 				ImageUrl = "test.jpg",
-				Price = 10.99
+				Price = 10.33m
+
 			};
 
-			// Act & Assert
+			await dishService.Add(model);
+
 			Assert.ThrowsAsync<ArgumentException>(async () => await dishService.Add(model));
 		}
 
 		[Test]
 		public async Task AllDishesAsync_ShouldReturnAllDishes()
 		{
-			// ... (Same as before)
+			AddDishTypeViewModel dishType = new AddDishTypeViewModel() { Name = "Test type" };
+			await dishTypeService.AddDishTypeAsync(dishType);
 
-			// Additional Arrange
-			var dishType = new DishType { Name = "Another Type" };
-			var dish3 = new Dish { Name = "Dish 3", DishType = dishType };
-			await dbContext.Dishes.AddAsync(dish3);
-			await dbContext.SaveChangesAsync();
+			AddMenuViewModel menuType = new AddMenuViewModel() { Id = 1, ImageUrl = " TestUrl.bg" };
+			await menuService.AddMenuAcync(menuType);
 
-			// Act
+			var model = new AddDishViewModel
+			{
+				Name = "Test Dish",
+				Description = "Test Description",
+				DishTypeId = 1,
+				ImageUrl = "test.jpg",
+				Price = 10.33m
+
+			};
+			var model2 = new AddDishViewModel
+			{
+				Name = "Test Dish2",
+				Description = "Test Description",
+				DishTypeId = 1,
+				ImageUrl = "test.jpg",
+				Price = 10.33m
+
+			};
+			var model3 = new AddDishViewModel
+			{
+				Name = "Test Dish3",
+				Description = "Test Description",
+				DishTypeId = 1,
+				ImageUrl = "test.jpg",
+				Price = 10.33m
+
+			};
+
+			await dishService.Add(model);
+			await dishService.Add(model2);
+			await dishService.Add(model3);
+
 			var result = await dishService.AllDishesAsync();
 
-			// Assert
 			Assert.That(result.Count(), Is.EqualTo(3));
-			CollectionAssert.AreEquivalent(new[] { dish1.Name, dish2.Name, dish3.Name }, result.Select(d => d.Name));
+			CollectionAssert.AreEquivalent(new[] { model.Name, model2.Name, model3.Name }, result.Select(d => d.Name));
 		}
 
 		[Test]
 		public async Task DeleteDishByIdAsync_ShouldDeleteDish()
 		{
-			// ... (Same as before)
+			AddDishTypeViewModel dishType = new AddDishTypeViewModel() { Name = "Test type" };
+			await dishTypeService.AddDishTypeAsync(dishType);
 
-			// Additional Arrange
-			var deletedDish = new Dish { Name = "Deleted Dish" };
-			await dbContext.Dishes.AddAsync(deletedDish);
-			await dbContext.SaveChangesAsync();
+			AddMenuViewModel menuType = new AddMenuViewModel() { Id = 1, ImageUrl = " TestUrl.bg" };
+			await menuService.AddMenuAcync(menuType);
 
-			// Act
-			await dishService.DeleteDishByIdAsync(deletedDish.Id);
+			var model = new AddDishViewModel
+			{
+				Id = 1,
+				Name = "Test Dish",
+				Description = "Test Description",
+				DishTypeId = 1,
+				ImageUrl = "test.jpg",
+				Price = 10.33m
 
-			// Assert
-			var deletedDishEntity = await dbContext.Dishes.FindAsync(deletedDish.Id);
-			Assert.True(deletedDishEntity.IsDeleted);
+			};
+
+			await dishService.Add(model);
+
+			await dishService.DeleteDishByIdAsync(model.Id);
+
+			var dish = await dbContext.Dishes.FindAsync(1);
+
+			Assert.True(dish!.IsDeleted);
 		}
 
 		[Test]
-		public async Task DeleteDishByIdAsync_ShouldThrowArgumentException_WhenInvalidDishId()
+		public void DeleteDishByIdAsyncShouldThrowArgumentExceptionWhenInvalidDishId()
 		{
-			// Arrange
 			var invalidDishId = -1;
 
-			// Act & Assert
 			Assert.ThrowsAsync<ArgumentException>(async () => await dishService.DeleteDishByIdAsync(invalidDishId));
 		}
 
-		// ... (Other test methods, similar to before)
+		[Test]
+		public async Task AllDishTypes_ShouldReturnAllDishTypes()
+		{
+			AddDishTypeViewModel dishType = new AddDishTypeViewModel() { Name = "Test type" };
+			await dishTypeService.AddDishTypeAsync(dishType);
+
+			AddDishTypeViewModel dishType2 = new AddDishTypeViewModel() { Name = "Test type2" };
+			await dishTypeService.AddDishTypeAsync(dishType2);
+
+			AddDishTypeViewModel dishType3 = new AddDishTypeViewModel() { Name = "Test type3" };
+			await dishTypeService.AddDishTypeAsync(dishType3);
+
+			var result = await dbContext.DishTypes.ToArrayAsync();
+
+			Assert.That(result.Count(), Is.EqualTo(3));
+			CollectionAssert.AreEquivalent(new[] { dishType.Name, dishType2.Name, dishType3.Name }, result.Select(d => d.Name));
+		}
+
+		[Test]
+		public async Task GetDishByIdAsync_ShouldReturnValidDish()
+		{
+			AddDishTypeViewModel dishType = new AddDishTypeViewModel() { Name = "Test type" };
+			await dishTypeService.AddDishTypeAsync(dishType);
+
+			AddMenuViewModel menuType = new AddMenuViewModel() { Id = 1, ImageUrl = " TestUrl.bg" };
+			await menuService.AddMenuAcync(menuType);
+
+			var model = new AddDishViewModel
+			{
+				Id = 1,
+				Name = "Test Dish",
+				Description = "Test Description",
+				DishTypeId = 1,
+				ImageUrl = "test.jpg",
+				Price = 10.33m
+
+			};
+
+			await dishService.Add(model);
+
+			var dish = dishService.GetDishById(model.Id);
+
+			Assert.That(model.Id, Is.EqualTo(dish.Id));
+		}
+
+		[Test]
+		public async Task GetDishByIdAsync_ShouldReturnNull()
+		{
+			int invalidDishId = 5;
+
+			var dish = await dishService.GetDishById(invalidDishId);
+
+			Assert.That(dish, Is.EqualTo(null));
+		}
+
+		[Test]
+		public async Task GetDishForEditByIdAsync_ShouldReturnValidModel()
+		{
+			AddDishTypeViewModel dishType = new AddDishTypeViewModel() { Name = "Test type" };
+			await dishTypeService.AddDishTypeAsync(dishType);
+
+			AddMenuViewModel menuType = new AddMenuViewModel() { Id = 1, ImageUrl = " TestUrl.bg" };
+			await menuService.AddMenuAcync(menuType);
+
+			var model = new AddDishViewModel
+			{
+				Id = 1,
+				Name = "Test Dish",
+				Description = "Test Description",
+				DishTypeId = 1,
+				ImageUrl = "test.jpg",
+				Price = 10.33m
+
+			};
+
+			await dishService.Add(model);
+
+			var resultModel = await dishService.GetDishForEditByIdAsync(model.Id);
+
+			Assert.That(resultModel!.Price, Is.EqualTo(model.Price));
+			Assert.That(resultModel!.Description, Is.EqualTo(model.Description));
+			Assert.That(resultModel!.DishTypeId, Is.EqualTo(model.DishTypeId));
+			Assert.That(resultModel!.Name, Is.EqualTo(model.Name));
+		}
+		[Test]
+		public void GetDishForEditByIdAsync_ShouldThrowExceptionWhenDishIsNull()
+		{
+			int invalidDishId = 5;
+
+			Assert.ThrowsAsync<ArgumentException>(async () => await dishService.GetDishForEditByIdAsync(invalidDishId));
+		}
+
+		public void EditDishById_ShouldThrowExceptionWhenDishIsNull()
+		{
+			int invalidDishId = 5;
+
+			var model = new AddDishViewModel
+			{
+				Id = 1,
+				Name = "Test Dish",
+				Description = "Test Description",
+				DishTypeId = 1,
+				ImageUrl = "test.jpg",
+				Price = 10.33m
+
+			};
+
+			Assert.ThrowsAsync<ArgumentException>(async () => await dishService.EditDishById(model, invalidDishId));
+		}
+
+		[Test]
+		public async Task EditDishById_ShouldEditSuccessfull()
+		{
+			AddDishTypeViewModel dishType = new AddDishTypeViewModel() { Name = "Test type" };
+			await dishTypeService.AddDishTypeAsync(dishType);
+
+			AddMenuViewModel menuType = new AddMenuViewModel() { Id = 1, ImageUrl = " TestUrl.bg" };
+			await menuService.AddMenuAcync(menuType);
+
+			var dish = new AddDishViewModel
+			{
+				Id = 1,
+				Name = "Test Dish",
+				Description = "Test Description",
+				DishTypeId = 1,
+				ImageUrl = "test.jpg",
+				Price = 10.33m
+
+			};
+			await dishService.Add(dish);
+
+			var edditedDish = new AddDishViewModel
+			{
+				Id = 1,
+				Name = "Edit",
+				Description = "Edit",
+				DishTypeId = 1,
+				ImageUrl = "Edit.jpg",
+				Price = 11m
+
+			};
+
+			await dishService.EditDishById(edditedDish, dish.Id);
+
+			var resultDish = await dishService.GetDishById(dish.Id);
+
+			Assert.That(resultDish!.Price, Is.EqualTo(edditedDish.Price));
+			Assert.That(resultDish!.Description, Is.EqualTo(edditedDish.Description));
+			Assert.That(resultDish!.DishTypeId, Is.EqualTo(edditedDish.DishTypeId));
+			Assert.That(resultDish!.Name, Is.EqualTo(edditedDish.Name));
+		}
 
 		[TearDown]
 		public void CleanUp()
