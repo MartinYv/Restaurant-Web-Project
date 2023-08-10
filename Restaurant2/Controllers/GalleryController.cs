@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-using Restaurant2.Data;
+using Restaurant.Data;
 
 namespace Restaurant.Web.Controllers
 {

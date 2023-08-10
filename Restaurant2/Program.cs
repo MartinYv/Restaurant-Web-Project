@@ -6,7 +6,7 @@ using System.Reflection;
 using Restaurant.Web.Infrastucture.Extentions;
 using Restaurant.Web.Infrastructure.ModelBinders;
 
-using Restaurant2.Data;
+using Restaurant.Data;
 using Restaurant.Data.Models;
 using Restaurant.Services.Data.Interfaces;
 using static Restaurant.Common.GeneralApplicationConstants;

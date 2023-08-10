@@ -4,7 +4,7 @@
 	using Microsoft.AspNetCore.Http;
 	using Microsoft.EntityFrameworkCore;
 
-	using Restaurant2.Data;
+	using Restaurant.Data;
 	using Restaurant.Data.Models;
 	using Restaurant.Services.Data.Interfaces;
 	using Restaurant.Services.Data.Models.Order;

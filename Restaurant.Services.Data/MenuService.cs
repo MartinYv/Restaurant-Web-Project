@@ -2,7 +2,7 @@
 using Restaurant.Data.Models;
 using Restaurant.Services.Data.Interfaces;
 using Restaurant.ViewModels.Models.Menu;
-using Restaurant2.Data;
+using Restaurant.Data;
 using Restaurant.Services.Data.Models.Menu;
 using Restaurant.ViewModels.Order.Enum;
 using Restaurant.ViewModels.Models.Dish;

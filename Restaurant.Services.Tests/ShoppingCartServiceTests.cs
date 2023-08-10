@@ -11,7 +11,7 @@
 
 	using Restaurant.Services.Data;
 	using Restaurant.Services.Data.Interfaces;
-	using Restaurant2.Data;
+	using Restaurant.Data;
 	using Restaurant.Data.Models;
 	using Restaurant.ViewModels.Models.Order;
 
@@ -43,18 +43,22 @@
 		[Test]
 		public void AddItem_ShouldThrowException_WhenUserIsNotLoggedIn()
 		{
-			var userId = string.Empty;
 			var dishId = 1;
-			var qty = 2;
+			var quantity = 2;
 
-			MockHttpContextAccessor(userId);
+			MockHttpContextAccessor(string.Empty);
 
-			Assert.ThrowsAsync<ArgumentException>(async () => await shoppingCartService.AddItem(dishId, qty));
+			Assert.ThrowsAsync<ArgumentException>(async () => await shoppingCartService.AddItem(dishId, quantity));
 		}
 
 		[Test]
 		public async Task AddItem_ShouldCreateCartAndCreateDetail()
 		{
+			ApplicationUser user = new ApplicationUser() { Id = new Guid() };
+			dbContext.Users.Add(user);
+
+			MockHttpContextAccessor(user.Id.ToString());
+
 			var dish = new Dish
 			{
 				Id = 1,
@@ -65,20 +69,15 @@
 				Price = 10.33m
 
 			};
+
 			await dbContext.Dishes.AddAsync(dish);
-
-			var userId = Guid.NewGuid().ToString();
-			var qty = 2;
-
-			MockHttpContextAccessor(userId);
-
-			dbContext.Users.Add(new ApplicationUser { Id = Guid.Parse(userId) });
-
 			await dbContext.SaveChangesAsync();
+			
+			var quantity = 2;
 
-			await shoppingCartService.AddItem(dish.Id, qty);
+			await shoppingCartService.AddItem(dish.Id, quantity);
 
-			var cart = await dbContext.ShoppingCarts.Include(c => c.CartDetails).FirstOrDefaultAsync(c => c.UserId == Guid.Parse(userId));
+			var cart = await dbContext.ShoppingCarts.Include(c => c.CartDetails).FirstOrDefaultAsync(c => c.UserId == Guid.Parse(user.Id.ToString()));
 
 			Assert.NotNull(cart);
 			Assert.That(dbContext.ShoppingCarts.Count(), Is.EqualTo(1));
@@ -90,6 +89,11 @@
 		[Test]
 		public async Task AddItem_ShouldIncreaseQuantity_WhenCartItemExists()
 		{
+			ApplicationUser user = new ApplicationUser() { Id = new Guid() };
+			dbContext.Users.Add(user);
+
+			MockHttpContextAccessor(user.Id.ToString());
+
 			var dish = new Dish
 			{
 				Id = 1,
@@ -100,23 +104,18 @@
 				Price = 10m
 
 			};
+
 			await dbContext.Dishes.AddAsync(dish);
-
-			var userId = Guid.NewGuid().ToString();
-			var qty = 2;
-
-			MockHttpContextAccessor(userId);
-
-			dbContext.Users.Add(new ApplicationUser { Id = Guid.Parse(userId) });
-
 			await dbContext.SaveChangesAsync();
 
-			dbContext.ShoppingCarts.Add(new ShoppingCart { UserId = Guid.Parse(userId) });
+			var quantity = 2;
+
+			dbContext.ShoppingCarts.Add(new ShoppingCart { UserId = Guid.Parse(user.Id.ToString()) });
 			dbContext.CartDetails.Add(new CartDetail { ShoppingCartId = 1, DishId = dish.Id, Quantity = 3, UnitPrice = 10 });
 
 			await dbContext.SaveChangesAsync();
 
-			await shoppingCartService.AddItem(dish.Id, qty);
+			await shoppingCartService.AddItem(dish.Id, quantity);
 
 			var cartDetail = await dbContext.CartDetails.FirstOrDefaultAsync(cd => cd.DishId == dish.Id);
 
@@ -127,10 +126,9 @@
 		[Test]
 		public void RemoveItem_ShouldThrowException_WhenUserIsNotLoggedIn()
 		{
-			var userId = string.Empty;
 			var dishId = 1;
 
-			MockHttpContextAccessor(userId);
+			MockHttpContextAccessor(string.Empty);
 
 			Assert.ThrowsAsync<Exception>(async () => await shoppingCartService.RemoveItem(dishId));
 		}
@@ -138,13 +136,14 @@
 		[Test]
 		public async Task RemoveItem_ShouldThrowException_WhenCartIsNull()
 		{
-			var userId = Guid.NewGuid().ToString();
 			var dishId = 1;
 
-			MockHttpContextAccessor(userId);
+			ApplicationUser user = new ApplicationUser() { Id = new Guid() };
+			dbContext.Users.Add(user);
 
-			dbContext.Users.Add(new ApplicationUser { Id = Guid.Parse(userId) });
 			await dbContext.SaveChangesAsync();
+
+			MockHttpContextAccessor(user.Id.ToString());
 
 			Assert.ThrowsAsync<Exception>(async () => await shoppingCartService.RemoveItem(dishId));
 		}
@@ -152,13 +151,16 @@
 		[Test]
 		public async Task RemoveItem_ShouldThrowException_WhenCartItemIsNull()
 		{
-			var userId = Guid.NewGuid().ToString();
-			var dishId = 1;
+			int dishId = 1;
 
-			MockHttpContextAccessor(userId);
+			ApplicationUser user = new ApplicationUser() { Id = new Guid() };
+			dbContext.Users.Add(user);
 
-			dbContext.Users.Add(new ApplicationUser { Id = Guid.Parse(userId) });
-			dbContext.ShoppingCarts.Add(new ShoppingCart { UserId = Guid.Parse(userId) });
+			await dbContext.SaveChangesAsync();
+
+			MockHttpContextAccessor(user.Id.ToString());
+
+			dbContext.ShoppingCarts.Add(new ShoppingCart { UserId = Guid.Parse(user.Id.ToString()) });
 
 			await dbContext.SaveChangesAsync();
 
@@ -168,6 +170,12 @@
 		[Test]
 		public async Task RemoveItem_ShouldRemoveCartItem_WhenQuantityIsOne()
 		{
+			ApplicationUser user = new ApplicationUser() { Id = new Guid() };
+			dbContext.Users.Add(user);
+			await dbContext.SaveChangesAsync();
+
+			MockHttpContextAccessor(user.Id.ToString());
+
 			var dish = new Dish
 			{
 				Id = 1,
@@ -178,22 +186,16 @@
 				Price = 10
 
 			};
+
 			dbContext.Dishes.Add(dish);
-
-			var userId = Guid.NewGuid().ToString();
-			var dishId = 1;
-
-			MockHttpContextAccessor(userId);
-
-			dbContext.Users.Add(new ApplicationUser { Id = Guid.Parse(userId) });
-			dbContext.ShoppingCarts.Add(new ShoppingCart { UserId = Guid.Parse(userId) });
-			dbContext.CartDetails.Add(new CartDetail { ShoppingCartId = 1, DishId = dishId, Quantity = 1, UnitPrice = 10 });
+			dbContext.ShoppingCarts.Add(new ShoppingCart { UserId = Guid.Parse(user.Id.ToString()) });
+			dbContext.CartDetails.Add(new CartDetail { ShoppingCartId = 1, DishId = dish.Id, Quantity = 1, UnitPrice = 10 });
 
 			await dbContext.SaveChangesAsync();
 
-			await shoppingCartService.RemoveItem(dishId);
+			await shoppingCartService.RemoveItem(dish.Id);
 
-			var cart = await dbContext.ShoppingCarts.Include(c => c.CartDetails).FirstOrDefaultAsync(c => c.UserId == Guid.Parse(userId));
+			var cart = await dbContext.ShoppingCarts.Include(c => c.CartDetails).FirstOrDefaultAsync(c => c.UserId == Guid.Parse(user.Id.ToString()));
 
 			Assert.NotNull(cart);
 			Assert.That(cart.CartDetails.Count, Is.EqualTo(0));
@@ -202,6 +204,12 @@
 		[Test]
 		public async Task RemoveItem_ShouldDecreaseQuantity_WhenCartItemExists()
 		{
+			ApplicationUser user = new ApplicationUser() { Id = new Guid() };
+			dbContext.Users.Add(user);
+			await dbContext.SaveChangesAsync();
+
+			MockHttpContextAccessor(user.Id.ToString());
+
 			var dish = new Dish
 			{
 				Id = 1,
@@ -212,22 +220,16 @@
 				Price = 10
 
 			};
+
 			dbContext.Dishes.Add(dish);
-
-			var userId = Guid.NewGuid().ToString();
-			var dishId = 1;
-
-			MockHttpContextAccessor(userId);
-
-			dbContext.Users.Add(new ApplicationUser { Id = Guid.Parse(userId) });
-			dbContext.ShoppingCarts.Add(new ShoppingCart { UserId = Guid.Parse(userId) });
-			dbContext.CartDetails.Add(new CartDetail { ShoppingCartId = 1, DishId = dishId, Quantity = 3, UnitPrice = 10 });
+			dbContext.ShoppingCarts.Add(new ShoppingCart { UserId = Guid.Parse(user.Id.ToString()) });
+			dbContext.CartDetails.Add(new CartDetail { ShoppingCartId = 1, DishId = dish.Id, Quantity = 3, UnitPrice = 10 });
 
 			await dbContext.SaveChangesAsync();
 
-			await shoppingCartService.RemoveItem(dishId);
+			await shoppingCartService.RemoveItem(dish.Id);
 
-			var cartDetail = await dbContext.CartDetails.FirstOrDefaultAsync(cd => cd.DishId == dishId);
+			var cartDetail = await dbContext.CartDetails.FirstOrDefaultAsync(cd => cd.DishId == dish.Id);
 
 			Assert.NotNull(cartDetail);
 			Assert.That(cartDetail.Quantity, Is.EqualTo(2));
@@ -236,9 +238,7 @@
 		[Test]
 		public void GetUserCart_ShouldThrowException_WhenUserIsNotLoggedIn()
 		{
-			var userId = string.Empty;
-
-			MockHttpContextAccessor(userId);
+			MockHttpContextAccessor(string.Empty);
 
 			Assert.ThrowsAsync<ArgumentException>(async () => await shoppingCartService.GetUserCart());
 		}
@@ -246,39 +246,35 @@
 		[Test]
 		public async Task GetUserCart_ShouldReturnCart_WhenUserIsLoggedIn()
 		{
-			var userId = Guid.NewGuid().ToString();
+			ApplicationUser user = new ApplicationUser() { Id = new Guid() };
+			dbContext.Users.Add(user);
 
-			MockHttpContextAccessor(userId);
+			await dbContext.SaveChangesAsync();
 
-			dbContext.Users.Add(new ApplicationUser { Id = Guid.Parse(userId) });
-			dbContext.ShoppingCarts.Add(new ShoppingCart { UserId = Guid.Parse(userId) });
+			MockHttpContextAccessor(user.Id.ToString());
+
+			dbContext.ShoppingCarts.Add(new ShoppingCart { UserId = user.Id });
 
 			await dbContext.SaveChangesAsync();
 
 			var cart = await shoppingCartService.GetUserCart();
 
 			Assert.That(cart, Is.Not.Null);
-			Assert.That(cart.UserId, Is.EqualTo(Guid.Parse(userId)));
+			Assert.That(cart.UserId, Is.EqualTo(Guid.Parse(user.Id.ToString())));
 		}
 
 		[Test]
 		public void DoCheckout_ShouldThrowException_WhenUserIsNotLoggedIn()
 		{
-			var userId = string.Empty;
-
-			MockHttpContextAccessor(userId);
+			MockHttpContextAccessor(string.Empty);
 
 			Assert.ThrowsAsync<Exception>(async () => await shoppingCartService.DoCheckout(new OrderUsersInfoViewModel()));
 		}
 
 		[Test]
-		public async Task DoCheckout_ShouldThrowException_WhenInvalidUser()
+		public void DoCheckout_ShouldThrowException_WhenInvalidUser()
 		{
-			MockHttpContextAccessor(Guid.NewGuid().ToString());
-
-			dbContext.Users.Add(new ApplicationUser { Id = Guid.NewGuid() });
-
-			await dbContext.SaveChangesAsync();
+			MockHttpContextAccessor(new Guid().ToString());
 
 			Assert.ThrowsAsync<ArgumentException>(async () => await shoppingCartService.DoCheckout(new OrderUsersInfoViewModel()));
 		}
@@ -286,12 +282,11 @@
 		[Test]
 		public async Task DoCheckout_ShouldThrowException_WhenCartIsEmpty()
 		{
-			var userId = Guid.NewGuid().ToString();
+			ApplicationUser user = new ApplicationUser() { Id = new Guid() };
+			dbContext.Users.Add(user);
 
-			MockHttpContextAccessor(userId);
-
-			dbContext.Users.Add(new ApplicationUser { Id = Guid.Parse(userId) });
 			await dbContext.SaveChangesAsync();
+			MockHttpContextAccessor(user.Id.ToString());
 
 			Assert.ThrowsAsync<Exception>(async () => await shoppingCartService.DoCheckout(new OrderUsersInfoViewModel()));
 		}

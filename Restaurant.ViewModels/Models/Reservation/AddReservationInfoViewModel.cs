@@ -22,12 +22,14 @@ namespace Restaurant.ViewModels.Models.Reservation
 		public string Phone { get; set; } = null!;
 
 		[Required]
-		[Range((double)ReservationHourMinLength, (double)ReservationHourMaxLength)]
-		[Precision(4, 2)]
-		public decimal Hour { get; set; }
+		
+		public TimeSpan Hour { get; set; }
 
 		[Required]
 		[Range(2,10)]
         public int Persons { get; set; }
+
+		
+        public DateTime Date { get; set; }
     }
 }

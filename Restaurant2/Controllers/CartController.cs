@@ -18,47 +18,46 @@ namespace Restaurant.Web.Controllers
         }
 
         [AllowAnonymous]
-        public async Task<IActionResult> AddItem(int dishId, int qty = 1, int redirect = 0)
+        public async Task<IActionResult> AddItem(int dishId, int quantity = 1, int redirect = 0)
         {
-            if (User?.Identity?.IsAuthenticated == false)
-            {
-                TempData[WarningMessage] = "First you have to log-in.";
-				return RedirectToPage("/Account/Login", new { area = "Identity" }); // js is making problems, to fix that
-
+				if (!User?.Identity?.IsAuthenticated ?? false)
+				{
+					TempData[WarningMessage] = "First you have to log-in.";
+				return RedirectToAction("Login", "Account", new { area = "Identity" });
 			}
 			try
-            {
-                /*var cartCount = */await cartService.AddItem(dishId, qty);
-                TempData[SuccessMessage] = "Successfully added";
-            return RedirectToAction("GetUserCart");
+			{
 
-            }
-            catch (Exception ex)
-            {
-                TempData[ErrorMessage] = ex.Message;
-               return RedirectToAction("GetUserCart");
-            }
-            //if (redirect == 0)
-            //{
-            //    return Ok(cartCount);             // TO DO if redirect is equal to 0 to stay at the same page
-            //}
+				await cartService.AddItem(dishId, quantity);
 
-        }
+				if (redirect == 1)
+				{
+					return RedirectToAction("GetUserCart", "Cart");
+				}
 
-        public async Task<IActionResult> RemoveItem(int dishId)
+				return Json(new { success = true });
+			}
+			catch (Exception)
+			{
+				return Json(new { success = false });
+			}
+
+
+		}
+
+		public async Task<IActionResult> RemoveItem(int dishId)
         {
             try
             {
-           await cartService.RemoveItem(dishId);
-                return RedirectToAction("GetUserCart");
+                await cartService.RemoveItem(dishId);
+				//TempData[SuccessMessage] = "Successfully removed";
 
-
+				return RedirectToAction("GetUserCart");
             }
             catch (Exception)
             {
 
                 return RedirectToAction("GetUserCart");
-
             }
 
         }
@@ -104,5 +103,19 @@ namespace Restaurant.Web.Controllers
             }               
         }
 
-    }
+        [AllowAnonymous]
+		[HttpGet]
+		public IActionResult IsAuthenticated()
+		{
+            if (!User?.Identity?.IsAuthenticated ?? false)
+            {
+			return Json(new { isAuthenticated = false });
+            }
+            else
+            {
+				return Json(new { isAuthenticated = true });
+
+			}
+		}
+	}
 }

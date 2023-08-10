@@ -3,7 +3,7 @@ using Restaurant.Data.Models;
 using Restaurant.Services.Data.Interfaces;
 using Restaurant.ViewModels.Models.Dish;
 
-using Restaurant2.Data;
+using Restaurant.Data;
 
 namespace Restaurant.Services.Data
 {

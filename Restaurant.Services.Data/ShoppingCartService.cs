@@ -4,7 +4,7 @@
 	using Microsoft.EntityFrameworkCore;
 	using System.Security.Claims;
 
-	using Restaurant2.Data;
+	using Restaurant.Data;
 	using Restaurant.Data.Models;
 	using Restaurant.Services.Data.Interfaces;
 	using Restaurant.ViewModels.Models.Order;
@@ -22,6 +22,7 @@
         }
         public async Task AddItem(int dishId, int qty)
         {
+
             string? userId = GetUserId();
 
            // using var transaction = await context.Database.BeginTransactionAsync();
@@ -65,7 +66,7 @@
                     DishId = dishId,
                     ShoppingCartId = cart.Id,
                     Quantity = qty,
-                    UnitPrice = (int)dish.Price   // TO DO UPDATE FROM INT TO DECIMAL-> UNITPRICE
+                    UnitPrice = dish.Price  
                 };
                 await context.CartDetails.AddAsync(cartItem);
             }

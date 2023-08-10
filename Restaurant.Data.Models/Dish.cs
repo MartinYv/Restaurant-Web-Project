@@ -37,9 +37,5 @@ namespace Restaurant.Data.Models
 
         public List<OrderDetail> OrderDetail { get; set; } = new List<OrderDetail>();
         public List<CartDetail> CartDetail { get; set; } = new List<CartDetail>();
-
-      //  [ForeignKey("Menu")]
-      //  public int MenuId { get; set; }
-      //  public Menu Menu { get; set; } = null!;
     }
 }

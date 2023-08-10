@@ -60,6 +60,8 @@ namespace Restaurant.Web.Infrastucture.Extentions
             RoleManager<IdentityRole<Guid>> roleManager =
                 serviceProvider.GetRequiredService<RoleManager<IdentityRole<Guid>>>();
 
+
+
             Task.Run(async () =>
             {
                 if (await roleManager.RoleExistsAsync(AdminRoleName))

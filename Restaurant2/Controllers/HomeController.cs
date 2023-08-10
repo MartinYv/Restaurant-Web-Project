@@ -1,4 +1,4 @@
-﻿namespace Restaurant2.Controllers
+﻿namespace Restaurant.Controllers
 {
 	using Microsoft.AspNetCore.Authorization;
 	using Microsoft.AspNetCore.Mvc;

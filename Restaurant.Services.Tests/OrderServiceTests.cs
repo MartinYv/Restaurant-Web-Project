@@ -4,7 +4,7 @@
 	using Microsoft.EntityFrameworkCore;
 	using System.Security.Claims;
 
-	using Restaurant2.Data;
+	using Restaurant.Data;
 	using Restaurant.Data.Models;
 	using Restaurant.Services.Data;
 	using Restaurant.Services.Data.Interfaces;
@@ -80,10 +80,8 @@
 		[Test]
 		public void UserOrdersAsync_ShouldThrowArgumentException_WhenInvalidUserId() // not working right, shows me different user's id's
 		{
-			// Arrange
 			var queryModel = new AllOrdersQueryViewModel { OrderSorting = OrderSorting.Newest, CurrentPage = 1, OrdersPerPage = 10 };
 
-			// Act & Assert
 			Assert.ThrowsAsync<ArgumentException>(async () => await orderService.UserOrdersAsync(queryModel));
 		}
 

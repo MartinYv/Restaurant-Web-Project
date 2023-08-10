@@ -45,14 +45,18 @@
             }
         </table>
 
-        <div class="my-2">
-            <h5>Total(INR): </h5>
-            @(Model.CartDetails.Select(item => item.Dish.Price * item.Quantity).Sum())
+        <div class="row justify-content-end">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title">Total (lv.):   @(Model.CartDetails.Select(item => item.Dish.Price * item.Quantity).Sum())</h4>
+                        <a class="btn btn-primary btn-block" href="/Order/FinishOrder">Checkout</a>
+                    </div>
+                </div>
+            </div>
         </div>
+       
 
-        <div class="my-2">
-            <a class="btn btn-primary" href="/Order/FinishOrder">Checkout</a>
-        </div>
 
     }
     else

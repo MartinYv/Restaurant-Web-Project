@@ -4,30 +4,34 @@ using Microsoft.EntityFrameworkCore;
 using Restaurant.Data.Models;
 
 
-namespace Restaurant2.Data
+namespace Restaurant.Data
 {
-	public class RestaurantDbContext : IdentityDbContext<ApplicationUser, IdentityRole<Guid>, Guid>
-	{
-		public RestaurantDbContext(DbContextOptions<RestaurantDbContext> options)
-			: base(options)
-		{
+    using static Restaurant.Common.GeneralApplicationConstants;
+    public class RestaurantDbContext : IdentityDbContext<ApplicationUser, IdentityRole<Guid>, Guid>
+    {
+        public RestaurantDbContext(DbContextOptions<RestaurantDbContext> options)
+            : base(options)
+        {
 
-		}
+        }
 
-		public DbSet<Dish> Dishes { get; set; } = null!;
-		public DbSet<DishType> DishTypes { get; set; } = null!;
-		public DbSet<Order> Orders { get; set; } = null!;
-		public DbSet<Table> Tables { get; set; } = null!;
-		public DbSet<Menu> Menus { get; set; } = null!;
-		public DbSet<ShoppingCart> ShoppingCarts { get; set; } = null!;
-		public DbSet<CartDetail> CartDetails { get; set; } = null!;
-		public DbSet<OrderDetail> OrderDetails { get; set; } = null!;
-		public DbSet<Reservation> Reservations { get; set; } = null!;
+        public DbSet<Dish> Dishes { get; set; } = null!;
+        public DbSet<DishType> DishTypes { get; set; } = null!;
+        public DbSet<Order> Orders { get; set; } = null!;
+        public DbSet<Table> Tables { get; set; } = null!;
+        public DbSet<Menu> Menus { get; set; } = null!;
+        public DbSet<ShoppingCart> ShoppingCarts { get; set; } = null!;
+        public DbSet<CartDetail> CartDetails { get; set; } = null!;
+        public DbSet<OrderDetail> OrderDetails { get; set; } = null!;
+        public DbSet<Reservation> Reservations { get; set; } = null!;
 
 
-		protected override void OnModelCreating(ModelBuilder builder)
-		{
-			base.OnModelCreating(builder);
-		}
-	}
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+         
+            base.OnModelCreating(builder);
+
+          
+        }
+    }
 }

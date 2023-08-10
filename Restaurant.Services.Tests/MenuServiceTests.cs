@@ -2,7 +2,7 @@
 {
 	using Microsoft.EntityFrameworkCore;
 
-	using Restaurant2.Data;
+	using Restaurant.Data;
 	using Restaurant.Data.Models;
 	using Restaurant.Services.Data;
 	using Restaurant.Services.Data.Interfaces;
