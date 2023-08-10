@@ -11,6 +11,7 @@ namespace Restaurant.ViewModels.Models.Order
         public string Phone { get; set; } = null!;
         public string Address { get; set; } = null!;
         public string Price { get; set; } = null!;
+        public string? PromoCode { get; set; } = null!;
         public string CreateDate { get; set; } = null!;
         public string IsCompleted { get; set; } = null!;
         public List<OrderDetail> OrderDetail { get; set; } = new List<OrderDetail>();

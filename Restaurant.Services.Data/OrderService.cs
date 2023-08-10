@@ -11,187 +11,179 @@
 	using Restaurant.ViewModels.Models.Order;
 	using Restaurant.ViewModels.Order.Enum;
 	public class OrderService : IOrderService
-    {
-        private readonly RestaurantDbContext context;
-        private readonly IHttpContextAccessor httpContextAccessor;
+	{
+		private readonly RestaurantDbContext context;
+		private readonly IHttpContextAccessor httpContextAccessor;
 
-        public OrderService(RestaurantDbContext _context, IHttpContextAccessor _httpContextAccessor)
-        {
-            context = _context;
-            httpContextAccessor = _httpContextAccessor;
-        }
+		public OrderService(RestaurantDbContext _context,
+							IHttpContextAccessor _httpContextAccessor)
+		{
+			context = _context;
+			httpContextAccessor = _httpContextAccessor;
+		}
 
-        public async Task<IEnumerable<OrderViewModel>> AllOrdersAcync()
-        {
-            var model = await context.Orders.Where(o => o.IsDeleted == false).Include(o => o.OrderDetail).ThenInclude(o => o.Dish).Select(o => new OrderViewModel()
-            {
-                FirstName = o.FirstName,
-                LastName = o.LastName,
-                Address = o.Address,
-                Phone = o.Phone,
-                Price = o.Price.ToString(),
-                CustomerId = o.CustomerId,
-                CreateDate = o.CreateDate.ToString("MM/dd/yy H:mm:ss"),
-                IsCompleted = o.IsCompleted ? "Delivered" : "Pending",
-                OrderDetail = o.OrderDetail
-            }).ToListAsync();
+		public async Task<IEnumerable<OrderViewModel>> AllOrdersAcync()
+		{
+			var model = await context.Orders.Where(o => o.IsDeleted == false).Include(o=>o.PromoCode).Include(o => o.OrderDetail).ThenInclude(o => o.Dish).Select(o => new OrderViewModel()
+			{
+				FirstName = o.FirstName,
+				LastName = o.LastName,
+				Address = o.Address,
+				Phone = o.Phone,
+				Price = o.Price.ToString(),
+				CustomerId = o.CustomerId,
+				CreateDate = o.CreateDate.ToString("MM/dd/yy H:mm:ss"),
+				IsCompleted = o.IsCompleted ? "Delivered" : "Pending",
+				OrderDetail = o.OrderDetail,
+				PromoCode = o.PromoCode == null ? "None" : o.PromoCode.Code
+			}).ToListAsync();
 
-            return model;
-        }
+			return model;
+		}
 
-        public string? GetUserId()
-        {
-            string? userId = httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
-            return userId;
-        }
+		public string? GetUserId()
+		{
+			string? userId = httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
+			return userId;
+		}
 
-        public async Task<AllOrdersFilteredServiceModel> UserOrdersAsync(AllOrdersQueryViewModel queryModel)
-        {
-            string? userId = GetUserId();
-            if (userId == null)
-            {
-                throw new ArgumentException("Invalid user id.");
-            }
+		public async Task<AllOrdersFilteredServiceModel> UserOrdersAsync(AllOrdersQueryViewModel queryModel)
+		{
+			string? userId = GetUserId();
+			if (userId == null)
+			{
+				throw new ArgumentException("Invalid user id.");
+			}
 
-            ApplicationUser? user = context.Users.Include(u => u.OrdersPlaced).ThenInclude(o => o.OrderDetail).FirstOrDefault(x => x.Id == Guid.Parse(userId));
-            if (user == null)
-            {
-                throw new ArgumentException("Invalid user.");
-            }
-            var ordersQuery = context.Orders.Where(o => o.CustomerId == Guid.Parse(userId)).Include(o => o.OrderDetail).ThenInclude(o => o.Dish).AsQueryable();
+			ApplicationUser? user = context.Users.Include(u => u.OrdersPlaced).ThenInclude(o => o.OrderDetail).FirstOrDefault(x => x.Id == Guid.Parse(userId));
+			if (user == null)
+			{
+				throw new ArgumentException("Invalid user.");
+			}
+			var ordersQuery = context.Orders.Where(o => o.CustomerId == Guid.Parse(userId)).Include(o => o.OrderDetail).ThenInclude(o => o.Dish).AsQueryable();
 
-            ordersQuery = queryModel.OrderSorting switch
-            {
-                OrderSorting.Newest => ordersQuery
-                    .OrderByDescending(h => h.CreateDate),
-                OrderSorting.Oldest => ordersQuery
-                    .OrderBy(h => h.CreateDate),
-                OrderSorting.PriceAscending => ordersQuery
-                    .OrderBy(h => h.Price),
-                OrderSorting.PriceDescending => ordersQuery
-                    .OrderByDescending(h => h.Price),
-                OrderSorting.Pending => ordersQuery
-                .Where(o => o.IsCompleted == false),
-                OrderSorting.Delivered => ordersQuery
-                .Where(o => o.IsCompleted == true),
-                _ => ordersQuery
-                    .OrderByDescending(h => h.CreateDate)
-            };
-
-
-            IEnumerable<OrderViewModel> allOrders = await ordersQuery
-                       .Where(o => o.IsDeleted == false)
-                       .Skip((queryModel.CurrentPage - 1) * queryModel.OrdersPerPage)
-                       .Take(queryModel.OrdersPerPage)
-                       .Select(o => new OrderViewModel
-                       {
-                           //Id = h.Id.ToString(),
-                           FirstName = o.FirstName,
-                           LastName = o.LastName,
-                           Address = o.Address,
-                           CreateDate = o.CreateDate.ToString("MM/dd/yy H:mm:ss"),
-                           IsCompleted = o.IsCompleted ? "Delivered" : "Pending",
-                           Price = o.Price.ToString(),
-                           Phone = o.Phone,
-                           OrderDetail = o.OrderDetail
-                       })
-                       .ToListAsync();
-            int totalOrders = ordersQuery.Count();
-
-            return new AllOrdersFilteredServiceModel()
-            {
-                TotalOrdersCount = totalOrders,
-                Orders = allOrders,
-
-            };
-        }
-
-        public async Task<AllOrdersFilteredServiceModel> AllFilteredAsync(AllOrdersQueryViewModel queryModel)
-        {
-            var ordersQuery = context.Orders.Include(o => o.OrderDetail).ThenInclude(o => o.Dish).AsQueryable();
-
-            //if (!string.IsNullOrWhiteSpace(queryModel.SearchString))
-            //{
-            //	string wildCard = $"%{queryModel.SearchString.ToLower()}%";
-
-            //             ordersQuery = ordersQuery
-            //                 .Where(o => EF.Functions.Like(o.FirstName, wildCard) ||
-            //					 EF.Functions.Like(o.LastName, wildCard) ||
-            //					EF.Functions.Like(o.Address, wildCard) ||
-            //					EF.Functions.Like(o.Phone, wildCard));
-
-            //}
-
-            ordersQuery = queryModel.OrderSorting switch
-            {
-                OrderSorting.Newest => ordersQuery
-                    .OrderByDescending(h => h.CreateDate),
-                OrderSorting.Oldest => ordersQuery
-                    .OrderBy(h => h.CreateDate),
-                OrderSorting.PriceAscending => ordersQuery
-                    .OrderBy(h => h.Price),
-                OrderSorting.PriceDescending => ordersQuery
-                    .OrderByDescending(h => h.Price),
-                OrderSorting.Pending => ordersQuery
-                .Where(o => o.IsCompleted == false),
-                OrderSorting.Delivered => ordersQuery
-                .Where(o => o.IsCompleted == true),
-                _ => ordersQuery
-                    .OrderByDescending(h => h.CreateDate)
-            };
+			ordersQuery = queryModel.OrderSorting switch
+			{
+				OrderSorting.Newest => ordersQuery
+					.OrderByDescending(h => h.CreateDate),
+				OrderSorting.Oldest => ordersQuery
+					.OrderBy(h => h.CreateDate),
+				OrderSorting.PriceAscending => ordersQuery
+					.OrderBy(h => h.Price),
+				OrderSorting.PriceDescending => ordersQuery
+					.OrderByDescending(h => h.Price),
+				OrderSorting.Pending => ordersQuery
+				.Where(o => o.IsCompleted == false),
+				OrderSorting.Delivered => ordersQuery
+				.Where(o => o.IsCompleted == true),
+				_ => ordersQuery
+					.OrderByDescending(h => h.CreateDate)
+			};
 
 
-            IEnumerable<OrderViewModel> allOrders = await ordersQuery
-           .Where(o => o.IsDeleted == false)
-           .Skip((queryModel.CurrentPage - 1) * queryModel.OrdersPerPage)
-           .Take(queryModel.OrdersPerPage)
-           .Select(o => new OrderViewModel
-           {
-               Id = o.Id,
-               FirstName = o.FirstName,
-               LastName = o.LastName,
-               Address = o.Address,
-               CreateDate = o.CreateDate.ToString("MM/dd/yy H:mm:ss"),
-               IsCompleted = o.IsCompleted ? "Delivered" : "Pending",
-               Price = o.Price.ToString(),
-               Phone = o.Phone,
-               OrderDetail = o.OrderDetail
+			IEnumerable<OrderViewModel> allOrders = await ordersQuery
+					   .Where(o => o.IsDeleted == false)
+					   .Skip((queryModel.CurrentPage - 1) * queryModel.OrdersPerPage)
+					   .Take(queryModel.OrdersPerPage)
+					   .Select(o => new OrderViewModel
+					   {
+						   //Id = h.Id.ToString(),
+						   FirstName = o.FirstName,
+						   LastName = o.LastName,
+						   Address = o.Address,
+						   CreateDate = o.CreateDate.ToString("MM/dd/yy H:mm:ss"),
+						   IsCompleted = o.IsCompleted ? "Delivered" : "Pending",
+						   Price = o.Price.ToString(),
+						   Phone = o.Phone,
+						   OrderDetail = o.OrderDetail,
+						   PromoCode = o.PromoCode == null ? "None" : o.PromoCode.Code
+					   })
+					   .ToListAsync();
+			int totalOrders = ordersQuery.Count();
+
+			return new AllOrdersFilteredServiceModel()
+			{
+				TotalOrdersCount = totalOrders,
+				Orders = allOrders,
+
+			};
+		}
+
+		public async Task<AllOrdersFilteredServiceModel> AllFilteredAsync(AllOrdersQueryViewModel queryModel)
+		{
+			var ordersQuery = context.Orders.Include(o=>o.PromoCode).Include(o => o.OrderDetail).ThenInclude(o => o.Dish).AsQueryable();
+
+			ordersQuery = queryModel.OrderSorting switch
+			{
+				OrderSorting.Newest => ordersQuery
+					.OrderByDescending(h => h.CreateDate),
+				OrderSorting.Oldest => ordersQuery
+					.OrderBy(h => h.CreateDate),
+				OrderSorting.PriceAscending => ordersQuery
+					.OrderBy(h => h.Price),
+				OrderSorting.PriceDescending => ordersQuery
+					.OrderByDescending(h => h.Price),
+				OrderSorting.Pending => ordersQuery
+				.Where(o => o.IsCompleted == false),
+				OrderSorting.Delivered => ordersQuery
+				.Where(o => o.IsCompleted == true),
+				_ => ordersQuery
+					.OrderByDescending(h => h.CreateDate)
+			};
+
+
+			IEnumerable<OrderViewModel> allOrders = await ordersQuery
+		   .Where(o => o.IsDeleted == false)
+		   .Skip((queryModel.CurrentPage - 1) * queryModel.OrdersPerPage)
+		   .Take(queryModel.OrdersPerPage)
+		   .Select(o => new OrderViewModel
+		   {
+			   Id = o.Id,
+			   FirstName = o.FirstName,
+			   LastName = o.LastName,
+			   Address = o.Address,
+			   CreateDate = o.CreateDate.ToString("MM/dd/yy H:mm:ss"),
+			   IsCompleted = o.IsCompleted ? "Delivered" : "Pending",
+			   Price = o.Price.ToString(),
+			   Phone = o.Phone,
+			   OrderDetail = o.OrderDetail,
+               PromoCode = o.PromoCode == null ? "None" : o.PromoCode.Code
            })
-           .ToListAsync();
-           
-            int totalOrders = ordersQuery.Count();
+		   .ToListAsync();
 
-            return new AllOrdersFilteredServiceModel()
-            {
-                TotalOrdersCount = totalOrders,
-                Orders = allOrders
-            };
-        }
+			int totalOrders = ordersQuery.Count();
 
-        public async Task<Order?> FindOrderByIdAsync(int orderId)
-        {
-            return await context.Orders.FindAsync(orderId);
-        }
+			return new AllOrdersFilteredServiceModel()
+			{
+				TotalOrdersCount = totalOrders,
+				Orders = allOrders
+			};
+		}
 
-        public async Task ChangeStatusByIdAsync(int orderId)
-        {
-            Order? order = await FindOrderByIdAsync(orderId);
+		public async Task<Order?> FindOrderByIdAsync(int orderId)
+		{
+			return await context.Orders.FindAsync(orderId);
+		}
 
-            if (order == null)
-            {
-                throw new ArgumentException("Invalid order id");
-            }
+		public async Task ChangeStatusByIdAsync(int orderId)
+		{
+			Order? order = await FindOrderByIdAsync(orderId);
 
-            if (order.IsCompleted == false)
-            {
-                order.IsCompleted = true;
-            }
-            else
-            {
-                order.IsCompleted = false;
-            }
+			if (order == null)
+			{
+				throw new ArgumentException("Invalid order id");
+			}
 
-            await context.SaveChangesAsync();
-        }
-    }
+			if (order.IsCompleted == false)
+			{
+				order.IsCompleted = true;
+			}
+			else
+			{
+				order.IsCompleted = false;
+			}
+
+			await context.SaveChangesAsync();
+		}
+	}
 }

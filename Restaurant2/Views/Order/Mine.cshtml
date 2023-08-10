@@ -102,7 +102,7 @@ else
                 <table class="table table-bordered">
                     <thead class="table-dark">
                         <tr>
-                            <th colspan="6" class="text-center">Order Information</th>
+                            <th colspan="7" class="text-center">Order Information</th>
                         </tr>
                         <tr>
                             <th>Names</th>
@@ -111,6 +111,7 @@ else
                             <th>Status</th>
                             <th>Time placed</th>
                             <th>Total price</th>
+                            <th>Promo code</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -121,6 +122,7 @@ else
                             <td>@order.IsCompleted</td>
                             <td>@order.CreateDate</td>
                             <td>@order.Price</td>
+                            <td>@order.PromoCode</td>
                         </tr>
                     </tbody>
                 </table>

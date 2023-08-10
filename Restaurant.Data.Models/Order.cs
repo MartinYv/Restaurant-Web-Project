@@ -36,7 +36,9 @@ namespace Restaurant.Data.Models
         [Required]
         public DateTime  CreateDate { get; set; }
 
-        //public DateTime? TimeCompleted { get; set; }
+        [ForeignKey("PromoCode")]
+        public int? PromoCodeId { get; set; }
+        public PromoCode? PromoCode { get; set; }
 
         [Required]
         public bool IsCompleted { get; set; }

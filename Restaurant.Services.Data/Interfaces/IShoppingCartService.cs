@@ -1,22 +1,13 @@
-﻿using Restaurant.Data.Models;
-using Restaurant.ViewModels.Models.Order;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static Restaurant.Common.EntityValidationConstants;
-
-namespace Restaurant.Services.Data.Interfaces
+﻿namespace Restaurant.Services.Data.Interfaces
 {
+    using Restaurant.Data.Models;
+    using Restaurant.ViewModels.Models.Order;
     public interface IShoppingCartService
     {
         Task AddItem(int dishId, int qty);
         Task RemoveItem(int dishId);
         Task<ShoppingCart?> GetUserCart();
-        Task<int> GetCartItemCount(string userId = "");
         Task<ShoppingCart?> GetCart(string userId);
         Task<bool> DoCheckout(OrderUsersInfoViewModel usersInfo);
     }
-
 }

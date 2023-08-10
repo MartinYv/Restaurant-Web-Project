@@ -8,7 +8,6 @@
 	using static Restaurant.Common.NotificationMessagesConstants;
 
 	[Authorize(Roles = "Administrator")]
-
     public class DishTypeController : Controller
     {
         private readonly IDishTypeService dishTypeService;
@@ -85,7 +84,6 @@
             return View(model);
         }
 
-
         public async Task<IActionResult> Edit(AddDishTypeViewModel model, int id)
         {
             if (!ModelState.IsValid)
@@ -106,6 +104,5 @@
                 return RedirectToAction(nameof(All));
             }
         }
-
     }
 }

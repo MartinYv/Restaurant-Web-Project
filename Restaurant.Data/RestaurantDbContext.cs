@@ -25,6 +25,8 @@ namespace Restaurant.Data
         public DbSet<OrderDetail> OrderDetails { get; set; } = null!;
         public DbSet<Reservation> Reservations { get; set; } = null!;
 
+        public DbSet<PromoCode> PromoCodes { get; set; } = null!;
+
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
