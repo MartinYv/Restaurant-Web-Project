@@ -197,7 +197,7 @@
 				CreateDate = DateTime.UtcNow,
 				IsCompleted = false,
 				IsDeleted = false,
-				PromoCode = promoCode
+				PromoCode = promoCode,
 			};
 
 			await context.Orders.AddAsync(order);

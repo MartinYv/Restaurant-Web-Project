@@ -1,9 +1,11 @@
 ﻿namespace Restaurant.Web.Infrastructure.ModelBinders
 {
-	using System.Globalization;
-	using Microsoft.AspNetCore.Mvc.ModelBinding;
+    using System;
+    using System.Globalization;
+    using System.Threading.Tasks;
+    using Microsoft.AspNetCore.Mvc.ModelBinding;
 
-	public class DecimalModelBinder : IModelBinder
+    public class DecimalModelBinder : IModelBinder
 	{
 		public Task BindModelAsync(ModelBindingContext? bindingContext)
 		{

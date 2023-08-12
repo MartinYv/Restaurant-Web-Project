@@ -10,6 +10,7 @@
 	using Restaurant.Services.Data.Models.Order;
 	using Restaurant.ViewModels.Models.Order;
 	using Restaurant.ViewModels.Order.Enum;
+
 	public class OrderService : IOrderService
 	{
 		private readonly RestaurantDbContext context;

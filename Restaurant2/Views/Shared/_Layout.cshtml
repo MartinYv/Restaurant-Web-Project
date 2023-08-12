@@ -50,21 +50,12 @@
 							<a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Gallery">Gallery</a>
 						</li>
 
-						@if (User.IsAdmin())
-						{
-							<li class="nav-item">
-								<a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Menu">Menu</a>
-							</li>
-						}
-						else
-						{
+						
 							<li class="nav-item">
 								<a class="nav-link text-dark" asp-area="" asp-controller="Menu" asp-action="All">Menu</a>
 							</li>
-						}
-						<li class="nav-item">
-							<a class="nav-link text-dark" asp-area="" asp-controller="Reservation" asp-action="Add">Reservation</a>
-						</li>
+						
+					
 						<li class="nav-item">
 							<a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="About">About us</a>
 						</li>

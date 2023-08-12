@@ -286,6 +286,7 @@ namespace Restaurant.Data.Migrations
                         .HasColumnType("nvarchar(35)");
 
                     b.Property<decimal>("Price")
+                        .HasMaxLength(50)
                         .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 

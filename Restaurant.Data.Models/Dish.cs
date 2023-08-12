@@ -25,7 +25,7 @@
 
 		[Required]
 		[Precision(18, 2)]
-		[Range(DishPriceMinLength, DishPriceMaxLength)]
+		[MaxLength(DishPriceMaxLength)]
 		public decimal Price { get; set; }
 
 

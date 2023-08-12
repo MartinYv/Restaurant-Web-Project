@@ -1,8 +1,9 @@
-﻿namespace Restaurant.Tests.ServiceTests
+﻿namespace Restaurant.Services.Tests
 {
 	using Microsoft.AspNetCore.Http;
 	using Microsoft.EntityFrameworkCore;
 	using System.Security.Claims;
+	using Moq;
 
 	using Restaurant.Data;
 	using Restaurant.Data.Models;
@@ -10,7 +11,6 @@
 	using Restaurant.Services.Data.Interfaces;
 	using Restaurant.ViewModels.Models.Order;
 	using Restaurant.ViewModels.Order.Enum;
-	using Moq;
 
 	[TestFixture]
 	public class OrderServiceTests
@@ -78,7 +78,7 @@
 		}
 
 		[Test]
-		public void UserOrdersAsync_ShouldThrowArgumentException_WhenInvalidUserId() // not working right, shows me different user's id's
+		public void UserOrdersAsync_ShouldThrowArgumentException_WhenInvalidUserId()
 		{
 			var queryModel = new AllOrdersQueryViewModel { OrderSorting = OrderSorting.Newest, CurrentPage = 1, OrdersPerPage = 10 };
 
@@ -117,7 +117,17 @@
 		}
 
 		[Test]
-		public async Task ChangeStatusByIdAsync_ShouldChangeOrderStatus()
+		public async Task FindOrderByIdAsync_ShouldReturnNull_WhenInvalidIdIsProvided()
+		{
+			int invalidOrderId = 5;
+
+			var result = await orderService.FindOrderByIdAsync(invalidOrderId);
+
+			Assert.IsNull(result);
+		}
+
+		[Test]
+		public async Task ChangeStatusByIdAsync_ShouldChangeOrderStatusToTrue()
 		{
 			var order = new Order { FirstName = "Jo", LastName = "Masvidal", Address = "Test Address", IsCompleted = false, Phone = "0888130130", CreateDate = DateTime.Now, Price = 10, Customer = new ApplicationUser() };
 			
@@ -129,9 +139,25 @@
 			var updatedOrder = await dbContext.Orders.FindAsync(order.Id);
 
 			Assert.That(order.IsCompleted, Is.EqualTo(updatedOrder!.IsCompleted));
+			Assert.That(order.IsCompleted, Is.True);
+		}
+		
+		[Test]
+		public async Task ChangeStatusByIdAsync_ShouldChangeOrderStatusToFalse()
+		{
+			var order = new Order { FirstName = "Jo", LastName = "Masvidal", Address = "Test Address", IsCompleted = false, Phone = "0888130130", CreateDate = DateTime.Now, Price = 10, Customer = new ApplicationUser() };
+			
+			await dbContext.Orders.AddAsync(order);
+			await dbContext.SaveChangesAsync();
+
+			await orderService.ChangeStatusByIdAsync(order.Id);
+
+			var updatedOrder = await dbContext.Orders.FindAsync(order.Id);
 
 			await orderService.ChangeStatusByIdAsync(order.Id);
 			Assert.That(order.IsCompleted, Is.EqualTo(updatedOrder!.IsCompleted!));
+			Assert.That(order.IsCompleted, Is.False);
+
 		}
 
 		[TearDown]

@@ -14,5 +14,6 @@
 		public Task DeletePromoCodeAsync(int it);
 		public Task<bool> IsPromoCodeValid(int id);
 		public Task<PromoCode?> GetPromoCodeByString(string codeString);
+		public string RandomString(int length);
 	}
 }

@@ -1,4 +1,4 @@
-﻿namespace Restaurant.Tests.ServiceTests
+﻿namespace Restaurant.Services.Tests
 {
 	using Microsoft.EntityFrameworkCore;
 

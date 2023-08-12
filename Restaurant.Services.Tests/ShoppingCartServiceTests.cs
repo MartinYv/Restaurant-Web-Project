@@ -1,4 +1,4 @@
-﻿namespace Restaurant.Tests.ServiceTests
+﻿namespace Restaurant.Services.Tests
 {
 	using System;
 	using System.Linq;
@@ -21,6 +21,8 @@
 	{
 		private IPromoCodeService promoCodeService;
 		private IShoppingCartService shoppingCartService = null!;
+		private IOrderService orderService = null!;
+
 		private RestaurantDbContext dbContext;
 		private IHttpContextAccessor httpContextAccessor;
 
@@ -34,6 +36,7 @@
 			dbContext = new RestaurantDbContext(options);
 			httpContextAccessor = new HttpContextAccessor();
 
+			orderService = new OrderService(dbContext, httpContextAccessor);
 			promoCodeService = new PromoCodeService(dbContext);
 		}
 
@@ -221,7 +224,6 @@
 				DishTypeId = 1,
 				ImageUrl = "test.jpg",
 				Price = 10
-
 			};
 
 			dbContext.Dishes.Add(dish);
@@ -265,6 +267,22 @@
 			Assert.That(cart, Is.Not.Null);
 			Assert.That(cart.UserId, Is.EqualTo(Guid.Parse(user.Id.ToString())));
 		}
+		
+		[Test]
+		public async Task GetUserCart_ShouldReturnNull()
+		{
+			ApplicationUser user = new ApplicationUser() { Id = new Guid() };
+			dbContext.Users.Add(user);
+
+			await dbContext.SaveChangesAsync();
+
+			MockHttpContextAccessor(user.Id.ToString());
+
+	
+			var cart = await shoppingCartService.GetUserCart();
+
+			Assert.That(cart, Is.Null);
+		}
 
 		[Test]
 		public void DoCheckout_ShouldThrowException_WhenUserIsNotLoggedIn()
@@ -292,6 +310,136 @@
 			MockHttpContextAccessor(user.Id.ToString());
 
 			Assert.ThrowsAsync<Exception>(async () => await shoppingCartService.DoCheckout(new OrderUsersInfoViewModel()));
+		}
+		
+		[Test]
+		public async Task DoCheckout_ShouldApplyDiscount_WhenValidPromoCodeIsProvided()
+		{
+			ApplicationUser user = new ApplicationUser() { Id = new Guid() };
+			dbContext.Users.Add(user);
+
+			await dbContext.SaveChangesAsync();
+			MockHttpContextAccessor(user.Id.ToString());
+
+			PromoCode code = new PromoCode()
+			{
+				Code = promoCodeService.RandomString(8),
+				ExpirationDate = DateTime.UtcNow.AddDays(5),
+				MaxUsageTimes = 5,
+				UsedTimes = 1,
+				PromoPercent = 10
+			};
+
+			await dbContext.AddAsync(code);
+
+			var dish = new Dish
+			{
+				Id = 1,
+				Name = "Test Dish",
+				Description = "Test Description",
+				DishTypeId = 1,
+				ImageUrl = "test.jpg",
+				Price = 10
+			};
+
+			await dbContext.Dishes.AddAsync(dish);
+			
+			ShoppingCart cart = new ShoppingCart()
+			{
+				User = user,
+				UserId = user.Id
+			};
+
+			await dbContext.ShoppingCarts.AddAsync(cart);
+
+			CartDetail cartDetail = new CartDetail()
+			{
+				Dish = dish,
+				DishId = dish.Id,
+				Quantity = 1,
+				UnitPrice = 10,
+				ShoppingCart = cart,
+				ShoppingCartId = cart.Id
+			};
+			await dbContext.CartDetails.AddAsync(cartDetail);
+
+			cart.CartDetails.Add(cartDetail);
+			await dbContext.SaveChangesAsync();
+
+			OrderUsersInfoViewModel usersInfo = new OrderUsersInfoViewModel()
+			{
+				FirstName = "John",
+				LastName = "Wick",
+				Address = "Test Address",
+				Phone = "Test Phone",
+				PromoCode = code.Code		
+			};
+
+			await shoppingCartService.DoCheckout(usersInfo);
+
+			var order = await orderService.FindOrderByIdAsync(1);
+			Assert.That(order!.Price, Is.EqualTo(9));
+			Assert.That(order.PromoCode, Is.Not.Null);
+		}
+		
+		
+		[Test]
+		public async Task DoCheckout_ShouldNotApplyDiscount_WhenInvalidPromoCodeIsProvided()
+		{
+			ApplicationUser user = new ApplicationUser() { Id = new Guid() };
+			dbContext.Users.Add(user);
+
+			await dbContext.SaveChangesAsync();
+			MockHttpContextAccessor(user.Id.ToString());
+
+			var dish = new Dish
+			{
+				Id = 1,
+				Name = "Test Dish",
+				Description = "Test Description",
+				DishTypeId = 1,
+				ImageUrl = "test.jpg",
+				Price = 10
+			};
+
+			await dbContext.Dishes.AddAsync(dish);
+			
+			ShoppingCart cart = new ShoppingCart()
+			{
+				User = user,
+				UserId = user.Id
+			};
+
+			await dbContext.ShoppingCarts.AddAsync(cart);
+
+			CartDetail cartDetail = new CartDetail()
+			{
+				Dish = dish,
+				DishId = dish.Id,
+				Quantity = 1,
+				UnitPrice = 10,
+				ShoppingCart = cart,
+				ShoppingCartId = cart.Id
+			};
+			await dbContext.CartDetails.AddAsync(cartDetail);
+
+			cart.CartDetails.Add(cartDetail);
+			await dbContext.SaveChangesAsync();
+
+			OrderUsersInfoViewModel usersInfo = new OrderUsersInfoViewModel()
+			{
+				FirstName = "John",
+				LastName = "Wick",
+				Address = "Test Address",
+				Phone = "Test Phone",
+				PromoCode = "Invalid"		
+			};
+
+			await shoppingCartService.DoCheckout(usersInfo);
+
+			var order = await orderService.FindOrderByIdAsync(1);
+
+			Assert.That(order!.Price, Is.EqualTo(10));
 		}
 
 		/// <summary>

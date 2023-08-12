@@ -22,10 +22,11 @@
 		[Url]
 		public string ImageUrl { get; set; } = null!;
 
+
 		[Required]
 		[Precision(18, 2)]
-		[Range(DishPriceMinLength, DishPriceMaxLength)]
-		public decimal Price { get; set; }
+        [Range(DishPriceMinLength, DishPriceMaxLength)]
+        public decimal Price { get; set; }
 
 		public int DishTypeId { get; set; }
 		public IEnumerable<DishType> DishTypes { get; set; } = new List<DishType>();

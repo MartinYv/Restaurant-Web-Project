@@ -6,6 +6,7 @@
 	using Restaurant.Data.Models;
 	using Restaurant.Services.Data.Interfaces;
 	using Restaurant.ViewModels.Models.PromoCode;
+
 	public class PromoCodeService : IPromoCodeService
 	{
 		private readonly RestaurantDbContext context;
@@ -13,7 +14,6 @@
 		public PromoCodeService(RestaurantDbContext _context)
 		{
 			context = _context;
-
 		}
 
 		public async Task AddPromoCodeAsync(AddPromoCodeViewModel addPromoCode)
@@ -116,7 +116,7 @@
 			await context.SaveChangesAsync();
 		}
 
-		private string RandomString(int length)
+		public string RandomString(int length)
 		{
 			Random random = new Random();
 

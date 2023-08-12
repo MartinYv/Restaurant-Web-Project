@@ -1,4 +1,4 @@
-﻿namespace Restaurant.Tests.ServiceTests
+﻿namespace Restaurant.Services.Tests
 {
 	using Microsoft.EntityFrameworkCore;
 
@@ -80,6 +80,31 @@
 		}
 
 		[Test]
+		public async Task AddDishAsync_ShouldAddDishToMenu()
+		{
+			var dishType = new DishType { Name = "Test Dish Type" };
+
+			await dbContext.DishTypes.AddAsync(dishType);
+			await dbContext.SaveChangesAsync();
+
+			var menu = new Menu { DishTypeId = dishType.Id, ImageUrl = "menu.jpg" };
+
+			await dbContext.Menus.AddAsync(menu);
+			await dbContext.SaveChangesAsync();
+
+			var dish = new Dish { Name = "Test Dish", Description = "Description", Price = 10.0M, DishTypeId = dishType.Id, DishType = dishType };
+
+			await menuService.AddDishAsync(dish);
+
+			menu = await dbContext.Menus.Include(m => m.Dishes).FirstOrDefaultAsync(m => m.DishTypeId == dishType.Id);
+
+			Assert.NotNull(menu);
+			Assert.IsTrue(menu.Dishes.Any(d => d.Name == "Test Dish"));
+
+			dbContext.Database.EnsureDeleted();
+		}
+
+		[Test]
 		public async Task AddDishAsync_ShouldThrowException_WhenDishWithSameNameExists()
 		{
 			var dishType = new DishType { Name = "Test Dish Type" };
@@ -87,7 +112,7 @@
 			await dbContext.DishTypes.AddAsync(dishType);
 			await dbContext.SaveChangesAsync();
 
-			var menu = new Menu ()
+			var menu = new Menu()
 			{
 				DishTypeId = dishType.Id,
 				DishType = dishType,
@@ -97,8 +122,8 @@
 			await dbContext.Menus.AddAsync(menu);
 			await dbContext.SaveChangesAsync();
 
-			var existingDish = new Dish() 
-			{ 
+			var existingDish = new Dish()
+			{
 				Name = "Test Dish",
 				Description = "Existing Description",
 				ImageUrl = "Testurl.jpg",
@@ -112,10 +137,10 @@
 
 			var dish = new Dish()
 			{
-				Name = "Test Dish", 
+				Name = "Test Dish",
 				Description = "New Description",
-				Price = 10.0M, 
-				DishType = dishType, 
+				Price = 10.0M,
+				DishType = dishType,
 				DishTypeId = dishType.Id,
 				ImageUrl = "Testurl.jpg"
 			};
@@ -226,29 +251,14 @@
 			dbContext.Database.EnsureDeleted();
 		}
 
+
 		[Test]
-		public async Task AddDishAsync_ShouldAddDishToMenu()
+		public async Task GetMenuByName_ShouldReturnNullWhenMenuDoesntExist()
 		{
-			var dishType = new DishType { Name = "Test Dish Type" };
+			string invalidDishType = "InvalidDishTypeName";
+			var result = await menuService.GetMenuByName(invalidDishType);
 
-			await dbContext.DishTypes.AddAsync(dishType);
-			await dbContext.SaveChangesAsync();
-
-			var menu = new Menu { DishTypeId = dishType.Id, ImageUrl = "menu.jpg" };
-
-			await dbContext.Menus.AddAsync(menu);
-			await dbContext.SaveChangesAsync();
-
-			var dish = new Dish { Name = "Test Dish", Description = "Description", Price = 10.0M, DishTypeId = dishType.Id, DishType = dishType };
-
-			await menuService.AddDishAsync(dish);
-
-			menu = await dbContext.Menus.Include(m => m.Dishes).FirstOrDefaultAsync(m => m.DishTypeId == dishType.Id);
-
-			Assert.NotNull(menu);
-			Assert.IsTrue(menu.Dishes.Any(d => d.Name == "Test Dish"));
-
-			dbContext.Database.EnsureDeleted();
+			Assert.That(result, Is.Null);
 		}
 	}
 }
