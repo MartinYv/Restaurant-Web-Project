@@ -1,32 +1,33 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System.ComponentModel.DataAnnotations;
-using Restaurant.Data.Models;
-
-namespace Restaurant.ViewModels.Models.Dish
+﻿namespace Restaurant.ViewModels.Models.Dish
 {
-    using static Restaurant.Common.EntityValidationConstants.Dish;
-    public class AddDishViewModel
-    {
-        public int Id { get; set; }
-        [Required]
-        [StringLength(DishNameMaxLength, MinimumLength = DishNameMinLength)]
-        public string Name { get; set; } = null!;
+	using Microsoft.EntityFrameworkCore;
+	using System.ComponentModel.DataAnnotations;
 
-        [Required]
-        [StringLength(DishDescriptionMaxLength, MinimumLength = 1)]
-        public string Description { get; set; } = null!;
+	using Restaurant.Data.Models;
 
-        [Required]
-        [MaxLength(DishUrlMaxLength)]
-        [Url]
-        public string ImageUrl { get; set; } = null!;
+	using static Restaurant.Common.EntityValidationConstants.Dish;
+	public class AddDishViewModel
+	{
+		public int Id { get; set; }
+		[Required]
+		[StringLength(DishNameMaxLength, MinimumLength = DishNameMinLength)]
+		public string Name { get; set; } = null!;
 
-        [Required]
-        [Precision(18, 2)]
-        [Range(DishPriceMinLength, DishPriceMaxLength)]
-        public decimal Price { get; set; }
+		[Required]
+		[StringLength(DishDescriptionMaxLength, MinimumLength = DishDescriptionMinLength)]
+		public string Description { get; set; } = null!;
 
-        public int DishTypeId { get; set; }
-        public IEnumerable<DishType> DishTypes { get; set; } = new List<DishType>();
-    }
+		[Required]
+		[MaxLength(DishUrlMaxLength)]
+		[Url]
+		public string ImageUrl { get; set; } = null!;
+
+		[Required]
+		[Precision(18, 2)]
+		[Range(DishPriceMinLength, DishPriceMaxLength)]
+		public decimal Price { get; set; }
+
+		public int DishTypeId { get; set; }
+		public IEnumerable<DishType> DishTypes { get; set; } = new List<DishType>();
+	}
 }

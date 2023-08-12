@@ -34,6 +34,7 @@
 			}
 
 			var cart = await GetCart(userId);
+
 			if (cart == null)
 			{
 				cart = new ShoppingCart
@@ -69,13 +70,12 @@
 					Quantity = qty,
 					UnitPrice = dish.Price
 				};
+
 				await context.CartDetails.AddAsync(cartItem);
 			}
 
 			await context.SaveChangesAsync();
 		}
-
-
 
 		public async Task RemoveItem(int dishId)
 		{
@@ -88,12 +88,14 @@
 			}
 
 			var cart = await GetCart(userId);
+
 			if (cart == null)
 			{
 				throw new Exception("Invalid cart");
 			}
 
 			var cartItem = context.CartDetails.FirstOrDefault(a => a.ShoppingCartId == cart.Id && a.DishId == dishId);
+
 			if (cartItem == null)
 			{
 				throw new Exception("Not items in cart");
@@ -121,14 +123,13 @@
 
 			Guid? userId = Guid.Parse(GetUserId()!);
 
-
 			var shoppingCart = await context.ShoppingCarts
 								  .Include(a => a.CartDetails)
 								  .ThenInclude(a => a.Dish)
 								  .ThenInclude(a => a.DishType)
 								  .Where(a => a.UserId == userId).FirstOrDefaultAsync();
-			return shoppingCart;
 
+			return shoppingCart;
 		}
 		public async Task<ShoppingCart?> GetCart(string userId)
 		{
@@ -166,7 +167,6 @@
 			{
 				throw new Exception("Cart is empty");
 			}
-
 
 			bool applyPromoCode = false;
 			PromoCode? promoCode = null;
@@ -225,9 +225,7 @@
 				order.Price -= order.Price * ((decimal)promoCode!.PromoPercent / 100);
 			}
 
-
 			await context.SaveChangesAsync();
-
 
 			context.CartDetails.RemoveRange(cartDetail);
 

@@ -5,10 +5,13 @@
 
 	using Restaurant.Services.Data.Interfaces;
 	using Restaurant.ViewModels.Models.Dish;
-	using static Restaurant.Common.NotificationMessagesConstants;
 
-	[Authorize(Roles = "Administrator")]
-    public class DishTypeController : Controller
+	using static Restaurant.Common.NotificationMessagesConstants;
+	using static Restaurant.Common.GeneralApplicationConstants;
+
+
+	[Authorize(Roles = AdminRoleName)]
+	public class DishTypeController : Controller
     {
         private readonly IDishTypeService dishTypeService;
 
@@ -36,7 +39,6 @@
                 await dishTypeService.AddDishTypeAsync(model);
 
                 TempData[SuccessMessage] = "Dish type successfully added.";
-
                 return RedirectToAction(nameof(All));
             }
             catch (Exception ex)
@@ -44,7 +46,6 @@
                 TempData[ErrorMessage] = ex.Message;
                return RedirectToAction(nameof(All));
             }
-
         }
 
         public async Task<IActionResult> All()
@@ -59,6 +60,7 @@
             try
             {
                 await dishTypeService.DeleteDishTypeAsync(typeId);
+               
                 TempData[SuccessMessage] = "Dish type successfully deleted.";
                 return RedirectToAction(nameof(All));
             }
@@ -66,8 +68,7 @@
             {
                 TempData[ErrorMessage] = ex.Message;
                return RedirectToAction(nameof(All));
-            }
-            
+            }       
         }
 
         [HttpGet]

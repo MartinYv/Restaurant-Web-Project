@@ -1,11 +1,10 @@
-﻿using System.ComponentModel.DataAnnotations;
-using Restaurant.ViewModels.Order.Enum;
-
-namespace Restaurant.ViewModels.Models.Order
+﻿namespace Restaurant.ViewModels.Models.Order
 {
-    //using static Common.GeneralApplicationConstants;
+	using System.ComponentModel.DataAnnotations;
 
-    public class AllOrdersQueryViewModel
+	using Restaurant.ViewModels.Order.Enum;
+
+	public class AllOrdersQueryViewModel
 	{
 		public AllOrdersQueryViewModel()
 		{

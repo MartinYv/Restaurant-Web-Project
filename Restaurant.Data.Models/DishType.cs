@@ -1,18 +1,17 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace Restaurant.Data.Models
+﻿namespace Restaurant.Data.Models
 {
-    using static Restaurant.Common.EntityValidationConstants.DishType;
+	using System.ComponentModel.DataAnnotations;
 
-    public class DishType
-    {
-        [Key]
-        public int Id { get; set; }
+	using static Restaurant.Common.EntityValidationConstants.DishType;
 
-        [Required]
-        [MaxLength(DishTypeMaxLenght)]
-        public string Name { get; set; } = null!;
-        public bool IsDeleted { get; set; }
+	public class DishType
+	{
+		[Key]
+		public int Id { get; set; }
 
-    }
+		[Required]
+		[MaxLength(DishTypeMaxLenght)]
+		public string Name { get; set; } = null!;
+		public bool IsDeleted { get; set; }
+	}
 }

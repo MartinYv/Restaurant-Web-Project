@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
-using System.Reflection;
 
 using Restaurant.Web.Infrastucture.Extentions;
 using Restaurant.Web.Infrastructure.ModelBinders;
@@ -9,6 +8,7 @@ using Restaurant.Web.Infrastructure.ModelBinders;
 using Restaurant.Data;
 using Restaurant.Data.Models;
 using Restaurant.Services.Data.Interfaces;
+
 using static Restaurant.Common.GeneralApplicationConstants;
 
 
@@ -20,9 +20,6 @@ string connectionString =
 
 builder.Services.AddDbContext<RestaurantDbContext>(options =>
 	options.UseSqlServer(connectionString));
-
-
-
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
@@ -44,10 +41,10 @@ builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
 //Through this extended method we add all of the services throug reflection.
 builder.Services.AddApplicationServices(typeof(IOrderService));
 
-
-builder.Services.AddSession(); 
+builder.Services.AddSession();
 
 builder.Services.AddDistributedMemoryCache(); // This is required to store session data in memory
+
 builder.Services.AddSession(options =>
 {
 	options.Cookie.HttpOnly = true; // Ensure the session cookie is only accessed through HTTP
@@ -69,9 +66,7 @@ builder.Services
 					options.Filters.Add<AutoValidateAntiforgeryTokenAttribute>();
 				});
 
-
 var app = builder.Build();
-
 
 
 // Configure the HTTP request pipeline.
@@ -93,8 +88,7 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
-app.UseSession(); // asdasd
-
+app.UseSession();
 
 app.UseAuthentication();
 app.UseAuthorization();

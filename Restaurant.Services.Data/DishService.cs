@@ -12,12 +12,12 @@
 		private readonly RestaurantDbContext context;
 		private readonly IMenuService menuService;
 
-		public DishService(RestaurantDbContext _context, IMenuService menuService)
+		public DishService(RestaurantDbContext _context,
+			IMenuService menuService)
 		{
 			context = _context;
 			this.menuService = menuService;
 		}
-
 
 		public async Task Add(AddDishViewModel model)
 		{
@@ -72,7 +72,6 @@
 			{
 				throw new ArgumentException("Invalid dish Id.");
 			}
-
 		}
 
 		public async Task<Dish?> GetDishById(int Id)

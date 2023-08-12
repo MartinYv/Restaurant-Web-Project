@@ -24,7 +24,7 @@
 
 		public async Task<IEnumerable<OrderViewModel>> AllOrdersAcync()
 		{
-			var model = await context.Orders.Where(o => o.IsDeleted == false).Include(o=>o.PromoCode).Include(o => o.OrderDetail).ThenInclude(o => o.Dish).Select(o => new OrderViewModel()
+			var model = await context.Orders.Where(o => o.IsDeleted == false).Include(o => o.PromoCode).Include(o => o.OrderDetail).ThenInclude(o => o.Dish).Select(o => new OrderViewModel()
 			{
 				FirstName = o.FirstName,
 				LastName = o.LastName,
@@ -50,16 +50,19 @@
 		public async Task<AllOrdersFilteredServiceModel> UserOrdersAsync(AllOrdersQueryViewModel queryModel)
 		{
 			string? userId = GetUserId();
+
 			if (userId == null)
 			{
 				throw new ArgumentException("Invalid user id.");
 			}
 
 			ApplicationUser? user = context.Users.Include(u => u.OrdersPlaced).ThenInclude(o => o.OrderDetail).FirstOrDefault(x => x.Id == Guid.Parse(userId));
+
 			if (user == null)
 			{
 				throw new ArgumentException("Invalid user.");
 			}
+
 			var ordersQuery = context.Orders.Where(o => o.CustomerId == Guid.Parse(userId)).Include(o => o.OrderDetail).ThenInclude(o => o.Dish).AsQueryable();
 
 			ordersQuery = queryModel.OrderSorting switch
@@ -80,7 +83,6 @@
 					.OrderByDescending(h => h.CreateDate)
 			};
 
-
 			IEnumerable<OrderViewModel> allOrders = await ordersQuery
 					   .Where(o => o.IsDeleted == false)
 					   .Skip((queryModel.CurrentPage - 1) * queryModel.OrdersPerPage)
@@ -99,19 +101,19 @@
 						   PromoCode = o.PromoCode == null ? "None" : o.PromoCode.Code
 					   })
 					   .ToListAsync();
+
 			int totalOrders = ordersQuery.Count();
 
 			return new AllOrdersFilteredServiceModel()
 			{
 				TotalOrdersCount = totalOrders,
 				Orders = allOrders,
-
 			};
 		}
 
 		public async Task<AllOrdersFilteredServiceModel> AllFilteredAsync(AllOrdersQueryViewModel queryModel)
 		{
-			var ordersQuery = context.Orders.Include(o=>o.PromoCode).Include(o => o.OrderDetail).ThenInclude(o => o.Dish).AsQueryable();
+			var ordersQuery = context.Orders.Include(o => o.PromoCode).Include(o => o.OrderDetail).ThenInclude(o => o.Dish).AsQueryable();
 
 			ordersQuery = queryModel.OrderSorting switch
 			{
@@ -131,7 +133,6 @@
 					.OrderByDescending(h => h.CreateDate)
 			};
 
-
 			IEnumerable<OrderViewModel> allOrders = await ordersQuery
 		   .Where(o => o.IsDeleted == false)
 		   .Skip((queryModel.CurrentPage - 1) * queryModel.OrdersPerPage)
@@ -147,9 +148,8 @@
 			   Price = o.Price.ToString(),
 			   Phone = o.Phone,
 			   OrderDetail = o.OrderDetail,
-               PromoCode = o.PromoCode == null ? "None" : o.PromoCode.Code
-           })
-		   .ToListAsync();
+			   PromoCode = o.PromoCode == null ? "None" : o.PromoCode.Code
+		   }).ToListAsync();
 
 			int totalOrders = ordersQuery.Count();
 

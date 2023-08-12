@@ -1,88 +1,84 @@
-﻿using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.DependencyInjection;
-using Restaurant.Data.Models;
-using System.Reflection;
-
-using static Restaurant.Common.GeneralApplicationConstants;
-
-namespace Restaurant.Web.Infrastucture.Extentions
+﻿namespace Restaurant.Web.Infrastucture.Extentions
 {
-    public static class WebApplicationBuilderExtensions
-    {
-        /// <summary>
-        /// This method registers all services with their interfaces and implementations of given assembly.
-        /// The assembly is taken from the type of random service interface or implementation provided.
-        /// </summary>
-        /// <param name="serviceType"></param>
-        /// <exception cref="InvalidOperationException"></exception>
-        public static void AddApplicationServices(this IServiceCollection services, Type serviceType)
-        {
-            Assembly? serviceAssembly = Assembly.GetAssembly(serviceType);
-            if (serviceAssembly == null)
-            {
-                throw new InvalidOperationException("Invalid service type provided!");
-            }
+	using Microsoft.AspNetCore.Builder;
+	using Microsoft.AspNetCore.Identity;
+	using Microsoft.Extensions.DependencyInjection;
+	using System.Reflection;
 
-            Type[] implementationTypes = serviceAssembly
-                .GetTypes()
-                .Where(t => t.Name.EndsWith("Service") && !t.IsInterface)
-                .ToArray();
-            foreach (Type implementationType in implementationTypes)
-            {
-                Type? interfaceType = implementationType
-                    .GetInterface($"I{implementationType.Name}");
-                if (interfaceType == null)
-                {
-                    throw new InvalidOperationException(
-                        $"No interface is provided for the service with name: {implementationType.Name}");
-                }
+	using Restaurant.Data.Models;
 
-                services.AddScoped(interfaceType, implementationType);
-            }
-        }
+	using static Restaurant.Common.GeneralApplicationConstants;
 
-        /// <summary>
-        /// This method seeds admin role if it does not exist.
-        /// Passed email should be valid email of existing user in the application.
-        /// </summary>
-        /// <param name="app"></param>
-        /// <param name="email"></param>
-        /// <returns></returns>
-        public static IApplicationBuilder SeedAdministrator(this IApplicationBuilder app, string email)
-        {
-            using IServiceScope scopedServices = app.ApplicationServices.CreateScope();
+	public static class WebApplicationBuilderExtensions
+	{
+		/// <summary>
+		/// This method registers all services with their interfaces and implementations of given assembly.
+		/// The assembly is taken from the type of random service interface or implementation provided.
+		/// </summary>
+		/// <param name="serviceType"></param>
+		/// <exception cref="InvalidOperationException"></exception>
+		public static void AddApplicationServices(this IServiceCollection services, Type serviceType)
+		{
+			Assembly? serviceAssembly = Assembly.GetAssembly(serviceType);
 
-            IServiceProvider serviceProvider = scopedServices.ServiceProvider;
+			if (serviceAssembly == null)
+			{
+				throw new InvalidOperationException("Invalid service type provided!");
+			}
 
-            UserManager<ApplicationUser> userManager =
-                serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
-            RoleManager<IdentityRole<Guid>> roleManager =
-                serviceProvider.GetRequiredService<RoleManager<IdentityRole<Guid>>>();
+			Type[] implementationTypes = serviceAssembly
+				.GetTypes()
+				.Where(t => t.Name.EndsWith("Service") && !t.IsInterface)
+				.ToArray();
 
+			foreach (Type implementationType in implementationTypes)
+			{
+				Type? interfaceType = implementationType
+					.GetInterface($"I{implementationType.Name}");
 
+				if (interfaceType == null)
+				{
+					throw new InvalidOperationException(
+						$"No interface is provided for the service with name: {implementationType.Name}");
+				}
 
-            Task.Run(async () =>
-            {
-                if (await roleManager.RoleExistsAsync(AdminRoleName))
-                {
-                    return;
-                }
+				services.AddScoped(interfaceType, implementationType);
+			}
+		}
 
-                IdentityRole<Guid> role =
-                    new IdentityRole<Guid>(AdminRoleName);
+		/// <summary>
+		/// This method seeds admin role if it does not exist.
+		/// Passed email should be valid email of existing user in the application.
+		/// </summary>
+		/// <param name="app"></param>
+		/// <param name="email"></param>
+		/// <returns></returns>
+		public static IApplicationBuilder SeedAdministrator(this IApplicationBuilder app, string email)
+		{
+			using IServiceScope scopedServices = app.ApplicationServices.CreateScope();
 
-                await roleManager.CreateAsync(role);
+			IServiceProvider serviceProvider = scopedServices.ServiceProvider;
 
-                ApplicationUser adminUser =
-                    await userManager.FindByEmailAsync(email);
+			UserManager<ApplicationUser> userManager = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+			RoleManager<IdentityRole<Guid>> roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole<Guid>>>();
 
-                await userManager.AddToRoleAsync(adminUser, AdminRoleName);
-            })
-            .GetAwaiter()
-            .GetResult();
+			Task.Run(async () =>
+			{
+				if (await roleManager.RoleExistsAsync(AdminRoleName))
+				{
+					return;
+				}
 
-            return app;
-        }
-    }
+				IdentityRole<Guid> role = new IdentityRole<Guid>(AdminRoleName);
+				await roleManager.CreateAsync(role);
+
+				ApplicationUser adminUser = await userManager.FindByEmailAsync(email);
+				await userManager.AddToRoleAsync(adminUser, AdminRoleName);
+			})
+			.GetAwaiter()
+			.GetResult();
+
+			return app;
+		}
+	}
 }

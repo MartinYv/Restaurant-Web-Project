@@ -19,6 +19,7 @@
 	[TestFixture]
 	public class ShoppingCartServiceTests
 	{
+		private IPromoCodeService promoCodeService;
 		private IShoppingCartService shoppingCartService = null!;
 		private RestaurantDbContext dbContext;
 		private IHttpContextAccessor httpContextAccessor;
@@ -32,6 +33,8 @@
 
 			dbContext = new RestaurantDbContext(options);
 			httpContextAccessor = new HttpContextAccessor();
+
+			promoCodeService = new PromoCodeService(dbContext);
 		}
 
 		[TearDown]
@@ -307,7 +310,7 @@
 
 			httpContextAccessor = mockHttpContextAccessor.Object;
 
-			shoppingCartService = new ShoppingCartService(dbContext, httpContextAccessor);
+			shoppingCartService = new ShoppingCartService(dbContext, httpContextAccessor, promoCodeService);
 		}
 	}
 }

@@ -1,12 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Restaurant.Data.Models;
-using Restaurant.Services.Data.Interfaces;
-using Restaurant.ViewModels.Models.Dish;
-
-using Restaurant.Data;
-
-namespace Restaurant.Services.Data
+﻿namespace Restaurant.Services.Data
 {
+	using Microsoft.EntityFrameworkCore;
+
+	using Restaurant.Data;
+	using Restaurant.Services.Data.Interfaces;
+	using Restaurant.ViewModels.Models.Dish;
 	public class DishTypeService : IDishTypeService
 	{
 		private readonly RestaurantDbContext context;
@@ -15,6 +13,7 @@ namespace Restaurant.Services.Data
 		{
 			context = _context;
 		}
+
 		public async Task AddDishTypeAsync(AddDishTypeViewModel model)
 		{
 			if (!context.DishTypes.Where(t => t.IsDeleted == false).Any(t => t.Name == model.Name))
@@ -31,10 +30,7 @@ namespace Restaurant.Services.Data
 			{
 				throw new ArgumentException("Already existing type with that name.");
 			}
-
 		}
-
-
 
 		public async Task<IEnumerable<AllDishTypesViewModel>> AllDishTypesAsync()
 		{
@@ -48,8 +44,8 @@ namespace Restaurant.Services.Data
 
 		public async Task DeleteDishTypeAsync(int typeId)
 		{
-
 			var dishType = await context.DishTypes.Where(dt => dt.Id == typeId && dt.IsDeleted == false).FirstOrDefaultAsync();
+
 			if (dishType != null)
 			{
 				dishType.IsDeleted = true;
@@ -59,7 +55,6 @@ namespace Restaurant.Services.Data
 			{
 				throw new ArgumentException("Invalid dish type Id");
 			}
-
 		}
 
 		public async Task EditDishTypeById(AddDishTypeViewModel model, int id)
@@ -83,7 +78,5 @@ namespace Restaurant.Services.Data
 				Name = dt.Name
 			}).FirstOrDefaultAsync();
 		}
-
-
 	}
 }

@@ -1,53 +1,51 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-
-using static Restaurant.Common.EntityValidationConstants.Order;
-
-namespace Restaurant.Data.Models
+﻿namespace Restaurant.Data.Models
 {
-    public class Order
-    {
-        [Key]
-        public int Id { get; set; }
+	using Microsoft.EntityFrameworkCore;
+	using System.ComponentModel.DataAnnotations;
+	using System.ComponentModel.DataAnnotations.Schema;
 
-        [Required]
-        [MaxLength(FirstNameMaxLength)]
-        public string FirstName { get; set; } = null!;
+	using static Restaurant.Common.EntityValidationConstants.Order;
+	public class Order
+	{
+		[Key]
+		public int Id { get; set; }
 
-        [Required]
-        [MaxLength(LastNameMaxLength)]
-        public string LastName { get; set; } = null!;
+		[Required]
+		[MaxLength(FirstNameMaxLength)]
+		public string FirstName { get; set; } = null!;
 
-        [Required]
-        [MaxLength(PhoneMaxLength)]
-        [Phone]
-        public string Phone { get; set; } = null!;
+		[Required]
+		[MaxLength(LastNameMaxLength)]
+		public string LastName { get; set; } = null!;
 
-        [Required]
-        [MaxLength(AddressMaxLength)]
-        public string Address { get; set; } = null!;
+		[Required]
+		[MaxLength(PhoneMaxLength)]
+		[Phone]
+		public string Phone { get; set; } = null!;
 
-        [Required]
-        [Precision(18, 2)]
-        public decimal Price { get; set; }
-                 
+		[Required]
+		[MaxLength(AddressMaxLength)]
+		public string Address { get; set; } = null!;
 
-        [Required]
-        public DateTime  CreateDate { get; set; }
+		[Required]
+		[Precision(18, 2)]
+		public decimal Price { get; set; }
 
-        [ForeignKey("PromoCode")]
-        public int? PromoCodeId { get; set; }
-        public PromoCode? PromoCode { get; set; }
+		[Required]
+		public DateTime CreateDate { get; set; }
 
-        [Required]
-        public bool IsCompleted { get; set; }
+		[ForeignKey("PromoCode")]
+		public int? PromoCodeId { get; set; }
+		public PromoCode? PromoCode { get; set; }
+		public bool IsDeleted { get; set; }
 
-        [ForeignKey("Customer")]
-        public Guid CustomerId { get; set; }
-        public ApplicationUser Customer { get; set; } = null!;
-        public bool IsDeleted { get; set; }
-        public List<OrderDetail> OrderDetail { get; set; } = new List<OrderDetail>();
+		[Required]
+		public bool IsCompleted { get; set; }
 
-    }
+		[ForeignKey("Customer")]
+		public Guid CustomerId { get; set; }
+		public ApplicationUser Customer { get; set; } = null!;
+
+		public List<OrderDetail> OrderDetail { get; set; } = new List<OrderDetail>();
+	}
 }

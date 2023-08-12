@@ -2,12 +2,14 @@
 {
 	using Microsoft.AspNetCore.Mvc;
 	using Microsoft.AspNetCore.Authorization;
-	
+
 	using Restaurant.Services.Data.Interfaces;
 	using Restaurant.ViewModels.Models.Dish;
-	using static Restaurant.Common.NotificationMessagesConstants;
 
-	[Authorize(Roles = "Administrator")]
+	using static Restaurant.Common.NotificationMessagesConstants;
+	using static Restaurant.Common.GeneralApplicationConstants;
+
+	[Authorize(Roles = AdminRoleName)]
 	public class DishController : Controller
 	{
 		private readonly IDishService dishService;
@@ -40,16 +42,15 @@
 			try
 			{
 				await dishService.Add(model);
+
 				TempData[SuccessMessage] = "Dish successfully added.";
 				return RedirectToAction(nameof(All));
 			}
 			catch (Exception ex)
 			{
-
 				TempData[ErrorMessage] = ex.Message;
 				return RedirectToAction(nameof(All));
 			}
-
 		}
 
 		public async Task<IActionResult> All()
@@ -93,6 +94,7 @@
 			try
 			{
 				await dishService.EditDishById(model, id);
+
 				TempData[SuccessMessage] = "Dish successfully deleted.";
 				return RedirectToAction(nameof(All));
 			}
@@ -104,8 +106,3 @@
 		}
 	}
 }
-
-
-
-
-

@@ -13,13 +13,11 @@
 		[MaxLength(MenuUrlMaxLength)]
 		[Url]
 		public string ImageUrl { get; set; } = null!;
+		public List<Dish> Dishes { get; set; } = new List<Dish>();
+		public bool IsDeleted { get; set; }
 
 		[ForeignKey("DishType")]
 		public int DishTypeId { get; set; }
 		public DishType DishType { get; set; } = null!;
-
-		public List<Dish> Dishes { get; set; } = new List<Dish>();
-
-		public bool IsDeleted { get; set; }
 	}
 }

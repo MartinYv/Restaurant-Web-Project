@@ -1,10 +1,15 @@
 ﻿namespace Restaurant.Web.Controllers
 {
+	using Microsoft.AspNetCore.Authorization;
 	using Microsoft.AspNetCore.Mvc;
 
 	using Restaurant.Services.Data.Interfaces;
 	using Restaurant.ViewModels.Models.PromoCode;
+
 	using static Restaurant.Common.NotificationMessagesConstants;
+	using static Restaurant.Common.GeneralApplicationConstants;
+
+	[Authorize(Roles = AdminRoleName)]
 	public class PromoCodeController : Controller
 	{
 		private readonly IPromoCodeService promoCodeService;
@@ -40,7 +45,9 @@
 			}
 
 			await promoCodeService.AddPromoCodeAsync(model);
+
 			TempData[SuccessMessage] = "Successfully added.";
+
 			return RedirectToAction(nameof(All));
 		}
 
@@ -55,6 +62,7 @@
 			try
 			{
 				await promoCodeService.DeletePromoCodeAsync(id);
+
 				TempData[SuccessMessage] = "Successfully deleted.";
 				return RedirectToAction(nameof(All));
 			}

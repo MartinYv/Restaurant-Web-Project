@@ -1,9 +1,7 @@
 ﻿namespace Restaurant.Web.Infrastructure.ModelBinders
 {
 	using System.Globalization;
-
 	using Microsoft.AspNetCore.Mvc.ModelBinding;
-	using Microsoft.AspNetCore.Mvc.ModelBinding.Binders;
 
 	public class DecimalModelBinder : IModelBinder
 	{
@@ -16,6 +14,7 @@
 
 			ValueProviderResult valueResult =
 				bindingContext.ValueProvider.GetValue(bindingContext.ModelName);
+			
 			if (valueResult != ValueProviderResult.None && !string.IsNullOrWhiteSpace(valueResult.FirstValue))
 			{
 				decimal parsedValue = 0m;

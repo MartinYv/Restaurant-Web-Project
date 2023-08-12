@@ -1,12 +1,14 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using Restaurant.Services.Data.Interfaces;
-using Restaurant.ViewModels.Models.Order;
-using Restaurant.Web.Infrastucture.Extentions;
-using static Restaurant.Common.NotificationMessagesConstants;
-
-namespace Restaurant.Web.Controllers
+﻿namespace Restaurant.Web.Controllers
 {
+	using Microsoft.AspNetCore.Authorization;
+	using Microsoft.AspNetCore.Mvc;
+
+	using Restaurant.Services.Data.Interfaces;
+	using Restaurant.ViewModels.Models.Order;
+
+	using static Restaurant.Common.NotificationMessagesConstants;
+
+
 	[Authorize]
 	public class CartController : Controller
 	{
@@ -34,7 +36,6 @@ namespace Restaurant.Web.Controllers
 					return RedirectToAction("GetUserCart", "Cart");
 				}
 
-
 				return Json(new { success = true });
 			}
 			catch (Exception ex)
@@ -56,17 +57,14 @@ namespace Restaurant.Web.Controllers
 			{
 				return RedirectToAction("GetUserCart");
 			}
-
 		}
 
 		public async Task<IActionResult> GetUserCart()
 		{
-
 			try
 			{
 				var cart = await cartService.GetUserCart();
 				return View(cart);
-
 			}
 			catch (Exception ex)
 			{
@@ -77,7 +75,6 @@ namespace Restaurant.Web.Controllers
 
 		public async Task<IActionResult> Checkout(OrderUsersInfoViewModel usersInfo)
 		{
-
 			try
 			{
 				await cartService.DoCheckout(usersInfo);
@@ -87,7 +84,6 @@ namespace Restaurant.Web.Controllers
 			}
 			catch (Exception)
 			{
-
 				TempData[ErrorMessage] = "Something went wrong";
 				throw new Exception("Something happen in server side");
 			}

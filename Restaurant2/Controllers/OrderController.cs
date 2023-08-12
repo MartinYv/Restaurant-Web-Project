@@ -1,15 +1,18 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using Restaurant.Services.Data.Interfaces;
-using Restaurant.Services.Data.Models.Order;
-using Restaurant.ViewModels.Models.Order;
-
-using static Restaurant.Common.NotificationMessagesConstants;
-
-namespace Restaurant.Web.Controllers
+﻿namespace Restaurant.Web.Controllers
 {
-    [Authorize]
-    public class OrderController : Controller
+	using Microsoft.AspNetCore.Authorization;
+	using Microsoft.AspNetCore.Mvc;
+
+	using Restaurant.Services.Data.Interfaces;
+	using Restaurant.Services.Data.Models.Order;
+	using Restaurant.ViewModels.Models.Order;
+
+	using static Restaurant.Common.NotificationMessagesConstants;
+	using static Restaurant.Common.GeneralApplicationConstants;
+
+
+	[Authorize]
+	public class OrderController : Controller
 	{
 		private readonly IOrderService orderService;
 
@@ -17,7 +20,6 @@ namespace Restaurant.Web.Controllers
 		{
 			orderService = _orderService;
 		}
-
 
 		public async Task<IActionResult> All()
 		{
@@ -48,25 +50,23 @@ namespace Restaurant.Web.Controllers
 		{
 			try
 			{
-                AllOrdersFilteredServiceModel serviceModel =
-                await orderService.UserOrdersAsync(queryModel);
+				AllOrdersFilteredServiceModel serviceModel =
+				await orderService.UserOrdersAsync(queryModel);
 
-                queryModel.Orders = serviceModel.Orders;
-                queryModel.TotalOrders = serviceModel.TotalOrdersCount;
+				queryModel.Orders = serviceModel.Orders;
+				queryModel.TotalOrders = serviceModel.TotalOrdersCount;
 
-
-                return View("Mine", queryModel);
-            }
+				return View("Mine", queryModel);
+			}
 			catch (Exception)
 			{
 
 				return RedirectToAction("Index", "Home");
 			}
-
 		}
 
-        [Authorize(Roles = "Administrator")]
-        [HttpGet]
+		[HttpGet]
+		[Authorize(Roles = AdminRoleName)]
 		public async Task<IActionResult> AllFiltered([FromQuery] AllOrdersQueryViewModel queryModel)
 		{
 			AllOrdersFilteredServiceModel serviceModel =
@@ -74,15 +74,14 @@ namespace Restaurant.Web.Controllers
 
 			queryModel.Orders = serviceModel.Orders;
 			queryModel.TotalOrders = serviceModel.TotalOrdersCount;
-			//queryModel.Categories = await categoryService.AllCategoryNamesAsync();
 
-			return View("AllSorted",queryModel);
+			return View("AllSorted", queryModel);
 		}
 
 
-        [Authorize(Roles = "Administrator")]
-        [HttpPost]
-        public async Task<IActionResult> ChangeStatus(int orderId)
+		[HttpPost]
+		[Authorize(Roles = AdminRoleName)]
+		public async Task<IActionResult> ChangeStatus(int orderId)
 		{
 			try
 			{
@@ -91,11 +90,10 @@ namespace Restaurant.Web.Controllers
 			}
 			catch (Exception ex)
 			{
-                TempData[ErrorMessage] = ex.Message;
-            }
+				TempData[ErrorMessage] = ex.Message;
+			}
 
-            return RedirectToAction(nameof(AllFiltered));
-
-        }
-    }
+			return RedirectToAction(nameof(AllFiltered));
+		}
+	}
 }

@@ -51,7 +51,7 @@
 					<th>Status</th>
 					<th>Time placed</th>
 					<th>Total price</th>
-					<th>Promo Code</th> <!-- New column for Promo Code -->
+					<th>Promo Code</th> 
 				</tr>
 			</thead>
 			<tbody>
@@ -64,11 +64,10 @@
 						<td>@order.IsCompleted</td>
 						<td>@order.CreateDate</td>
 						<td>@order.Price</td>
-						<td>@(order.PromoCode ?? "none")</td> <!-- Display "none" if PromoCode is null -->
+						<td>@(order.PromoCode ?? "none")</td>
 					</tr>
 					<tr>
-						<td colspan="7">
-							<!-- Increase the colspan to accommodate the new column -->
+						<td colspan="7">							
 							<table class="table table-bordered">
 								<thead>
 									<tr>
